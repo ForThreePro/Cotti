@@ -5,7 +5,7 @@ import { fileTypeFromBuffer } from "file-type"
 let handler = async (m, { conn }) => {
   let q = m.quoted? m.quoted : m
   let mime = (q.msg || q).mimetype || ''
-  if (!mime) return conn.reply(m.chat, `🐱 *𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𝗢𝗙𝗜𝗖𝗜𝗔𝗟* 🐱
+  if (!mime) return conn.reply(m.chat, `🐱 *𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧𝗦 𝗫 𝗠𝗔𝗥𝗜𝗘* 🐱
 
 *━━━━━━━━━━*
 *⚠️ ERROR DE USO ⚠️*
@@ -15,8 +15,8 @@ let handler = async (m, { conn }) => {
 *➤* Formatos: *Imagen | Video | Audio | Doc*
 
 *━━━━━━━━━━*
-*Owner:* @whois.yallico 
-*WhatsApp:* +51 927 174 369`, m)
+*Owner:* @56931300864
+*IG:* @cottii.dzn`, m)
 
   try {
     await conn.sendMessage(m.chat, { react: { text: '⏳', key: m.key } })
@@ -24,29 +24,28 @@ let handler = async (m, { conn }) => {
     let link = await myCloud(media)
     if (!link.url) throw new Error()
 
-    let txt = `🐱 *𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𝗢𝗙𝗜𝗖𝗜𝗔𝗟* 🐱
+    let txt = `🐱 𓆩 𝗔𝗥𝗖𝗛𝗜𝗩𝗢 𝗦𝗨𝗕𝗜𝗗𝗢 𓆪 🐱
 
-*━━━━━━━━━━━━━━━━━━*
-*✅ ARCHIVO SUBIDO CORRECTAMENTE*
+.⃟𖥔 ݁. 𖦹˙— \`\`COTTI BOTS\`\` —˙𖦹.💖꒷
 
-*📊 DATOS DEL ARCHIVO*
-*➤ Enlace:* ${link.url}
-*➤ ID:* ${link.id || 'N/A'}
-*➤ Peso:* ${formatBytes(media.length)}
-*➤ Servidor:* *evogb.win*
-*➤ Bot:* ***Garfield Bot Oficial***
+──🌸 *DATOS DEL ARCHIVO* ╏ ☁️
+☁️ ➛ *Enlace:* ${link.url}
+☁️ ➛ *ID:* ${link.id || 'N/A'}
+☁️ ➛ *Peso:* ${formatBytes(media.length)}
+☁️ ➛ *Servidor:* *evogb.win*
+☁️ ➛ *Bot:* COTTI BOTS x Marie 🌸
 
-*━━━━━━━━━━━━━━━━━━*
-*Owner:* @whois.yallico 
-*WhatsApp:* +51 927 174 369
-> _"Guardado en la nube por Garfield Bot"_ ☁️⚡`
+━━━━━━━━━━━
+*Owner:* @56931300864
+*IG:* @cottii.dzn
+> _"Guardado en la nube por Marie"_ ☁️💖`
 
-    await conn.sendFile(m.chat, media, 'garfield.' + link.url.split('.').pop(), txt, m)
+    await conn.sendFile(m.chat, media, 'marie.' + link.url.split('.').pop(), txt, m)
     await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } })
   } catch (e) {
     console.error(e)
     await conn.sendMessage(m.chat, { react: { text: '❌', key: m.key } })
-    await conn.reply(m.chat, `🐱 *𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𝗢𝗙𝗜𝗖𝗜𝗔𝗟* 🐱
+    await conn.reply(m.chat, `🐱 *𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧𝗦 𝗫 𝗠𝗔𝗥𝗜𝗘* 🐱
 
 *━━━━━━━━━━*
 *❌ ERROR DE SUBIDA ❌*
@@ -56,8 +55,8 @@ let handler = async (m, { conn }) => {
 *➤* Intenta con otro archivo
 
 *━━━━━━━━━━*
-*Owner:* @whois.yallico 
-*WhatsApp:* +51 927 174 369`, m)
+*Owner:* @56931300864
+*IG:* @cottii.dzn`, m)
   }
 }
 
