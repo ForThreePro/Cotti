@@ -9,24 +9,24 @@ const react = async (conn, m, text) => {
 var handler = async (m, { conn, args, usedPrefix, command }) => {
   if (!args[0]) {
     return m.reply(
-`DESCARGADOR DE TIKTOK
+`🐱 *COTTI BOTS - DESCARGADOR* 🌸
 
-Uso: ${usedPrefix + command} <link de tiktok>
+Marie dice: Usa ${usedPrefix + command} <link de tiktok>
 Ejemplo: ${usedPrefix + command} https://vm.tiktok.com/ZMkcmTCa6/`
     )
   }
 
   const url = args[0]
   if (!url.match(/(https?:\/\/)?(www\.)?(vm\.|vt\.|www\.)?tiktok\.com\//)) {
-    return m.reply(`⚠️ El enlace no es válido de TikTok.`)
+    return m.reply(`🐱 *COTTI BOTS* \n😿 Ese enlace no es de TikTok~`)
   }
 
   try {
-    await react(conn, m, "⏳")
-    await m.reply('⏳ Procesando video...')
+    await react(conn, m, "🎀")
+    await m.reply('🎀 *COTTI BOTS* \n⏳ Marie está procesando tu video de TikTok... 🐾')
 
     const tiktokData = await tiktokdl(url)
-    if (!tiktokData?.data) return m.reply('❌ No se pudo obtener el video.')
+    if (!tiktokData?.data) return m.reply('🐱 *COTTI BOTS* \n😿 No pude obtener el video~')
 
     const videoURL = tiktokData.data.play
     const title = tiktokData.data.title || 'Sin título'
@@ -38,7 +38,7 @@ Ejemplo: ${usedPrefix + command} https://vm.tiktok.com/ZMkcmTCa6/`
       key: { remoteJid: m.chat, participant: '0@s.whatsapp.net', fromMe: false },
       message: {
         locationMessage: {
-          name: `TikTok`,
+          name: `COTTI BOTS 🌸`,
           jpegThumbnail: Buffer.from(await (await fetch('https://files.catbox.moe/dsgmid.jpg')).arrayBuffer())
         }
       }
@@ -51,16 +51,17 @@ Ejemplo: ${usedPrefix + command} https://vm.tiktok.com/ZMkcmTCa6/`
         message: {
           interactiveMessage: proto.Message.InteractiveMessage.fromObject({
             body: {
-              text: `╭─「 VIDEO DE TIKTOK 」
+              text: `╭─「 COTTI BOTS x MARIE 🌸 」
 │
 │ 📝 TÍTULO: ${title}
 │ 👤 AUTOR: @${author}
 │ ❤️ LIKES: ${likes}
 │ 💬 COMENTARIOS: ${comments}
 │
-╰───────────────────────`
+╰───────────────────────
+💖 Descarga sin marca de agua`
             },
-            footer: { text: 'Descarga sin marca de agua' },
+            footer: { text: 'Hecho por COTTI BOTS 🐾' },
             header: { hasMediaAttachment: true, videoMessage: media.videoMessage },
             nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
               buttons: [
@@ -74,11 +75,11 @@ Ejemplo: ${usedPrefix + command} https://vm.tiktok.com/ZMkcmTCa6/`
     }, { quoted: businessHeader })
 
     await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
-    await react(conn, m, "✅")
+    await react(conn, m, "💖")
 
   } catch (error) {
-    await react(conn, m, "❌")
-    m.reply(`❌ Error: ${error.message}`)
+    await react(conn, m, "😿")
+    m.reply(`🐱 *COTTI BOTS* \n❌ Error: ${error.message}\nSoporte: +56 9 3130 0864`)
   }
 }
 
