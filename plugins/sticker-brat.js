@@ -8,7 +8,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   let q = m.quoted ? m.quoted : m
   let txt = text || q.text || q.caption || q.body || ''
 
-  if (!txt) return m.reply(`🐱 *𝗖𝗢𝗧𝗜 𝗕𝗢𝗧𝗦 𝗫 𝗠𝗔𝗥𝗜𝗘 - 𝗕𝗥𝗔𝗧* 🐱
+  if (!txt) return m.reply(`🐱 *𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧𝗦 𝗫 𝗠𝗔𝗥𝗜𝗘 - 𝗕𝗥𝗔𝗧* 🐱
 
 *━━━━━━━━━━*
 *⚠️ ERROR DE USO*
@@ -26,7 +26,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   let response = await fetch(apiUrl)
   if (!response.ok) {
     await m.react('❌')
-    return m.reply(`🐱 *𝗖𝗢𝗧𝗜 𝗕𝗢𝗧𝗦 𝗫 𝗠𝗔𝗥𝗜𝗘* 🐱
+    return m.reply(`🐱 *𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧𝗦 𝗫 𝗠𝗔𝗥𝗜𝗘* 🐱
 
 *━━━━━━━━━━*
 *❌ ERROR*
