@@ -27,7 +27,7 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
       { prefijo: '91', bandera: '🇮🇳' }, { prefijo: '61', bandera: '🇦🇺' },
       { prefijo: '64', bandera: '🇳🇿' }, { prefijo: '1', bandera: '🇺🇸' },
       { prefijo: '7', bandera: '🇷🇺' }, { prefijo: '63', bandera: '🇵🇭' },
-      { prefijo: '95', bandera: '🇲🇲' }
+      { prefijo: '95', bandera: '🇲' }
     ]
 
     const getCountryFlag = (mem) => {
@@ -53,16 +53,16 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
     // Ordenar las banderas según el orden definido
     const orderedFlags = countryFlags.map(c => c.bandera).concat(['🚩'])
 
-    // Texto con diseño GARFIELD BOT OFICIAL
+    // Texto con diseño COTTI BOTS x MARIE
     let messageText = `🐱 𓆩 𝗜𝗡𝗩𝗢𝗖𝗔𝗖𝗜𝗢𝗡 𝗚𝗘𝗡𝗘𝗥𝗔𝗟 𓆪 🐱
 
-.⃟𖥔 ݁. 𖦹˙— \`\` ${groupName} \`\` —˙𖦹.🍕꒷
+.⃟𖥔 ݁. 𖦹˙— \`\` ${groupName} \`\` —˙𖦹.💖꒷
 
-──🍃 *𝗜𝗡𝗙𝗢* ╏ 💚
+──🌸 *𝗜𝗡𝗙𝗢* ╏ 💚
 💚 ➛ *Integrantes:* ${participants.length}
 💚 ➛ *Mensaje:* ${customMessage}
 
-──🍃 *𝗠𝗜𝗘𝗠𝗕𝗥𝗢𝗦 𝗣𝗢𝗥 𝗣𝗔𝗜𝗦* ╏ 🌿
+──🌸 *𝗠𝗜𝗘𝗠𝗕𝗥𝗢𝗦 𝗣𝗢𝗥 𝗣𝗔𝗜𝗦* ╏ 🌸
 `
 
     for (const flag of orderedFlags) {
@@ -77,7 +77,7 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
 
     messageText += `
 ━━━━━━━━━━━
-*Powered by*: ***Garfield Bot Oficial*** 🍕
+*Powered by*: ***COTTI BOTS x Marie*** 🌸
 *Owner*: @whois.yallico`
 
     // IMAGENES ROTATORIAS
@@ -98,7 +98,7 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
   } catch (error) {
     console.error("[ERROR EN TODOS]:", error)
     await m.react('❌')
-    conn.reply(m.chat, `❌ Ocurrió un error al ejecutar el comando.`, m)
+    conn.reply(m.chat, `😿 *Marie dice: Ocurrió un error al ejecutar el comando.*`, m)
   }
 }
 
