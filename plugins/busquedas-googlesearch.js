@@ -4,7 +4,7 @@ let handler = async (m, { conn, text }) => {
     let user = `@${m.sender.split('@')[0]}`
     let groupName = m.isGroup? (await conn.groupMetadata(m.chat)).subject : 'Privado'
 
-    if (!text) return m.reply(`🐱 𓆩 ***𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𝗢𝗙𝗜𝗖𝗜𝗔𝗟*** 𓆪 🐱\n\n✨ *¿Qué quieres buscar?*\n📌 *Ejemplo:* ${m.prefix}google garfield comiendo lasaña`)
+    if (!text) return m.reply(`🐱 𓆩 ***COTTI BOTS OFICIAL*** 𓆪 🐱\n\n🌸 *Marie dice: ¿Qué quieres buscar?*\n📌 *Ejemplo:* ${m.prefix}google katy perry`)
 
     await m.react('🔍')
 
@@ -14,12 +14,12 @@ let handler = async (m, { conn, text }) => {
 
         if (!results.length) {
             await m.react('❌')
-            return m.reply('🍕 *No encontré resultados.*')
+            return m.reply('😿 *Marie no encontró resultados~*')
         }
 
-        let txt = `🐱 𓆩 𝗕𝗨𝗦𝗖𝗔𝗗𝗢𝗥 𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𓆪 🐱
+        let txt = `🐱 𓆩 𝗕𝗨𝗦𝗖𝗔𝗗𝗢𝗥 𝗠𝗔𝗥𝗜𝗘 𓆪 🐱
 
-.⃟𖥔 ݁. 𖦹˙— \`\`RESULTADOS\`\` —˙𖦹.🍕꒷
+.⃟𖥔 ݁. 𖦹˙— \`\`RESULTADOS\`\` —˙𖦹.💖꒷
 
 🔎 *Buscando:* ${text}
 
@@ -35,7 +35,7 @@ ${results.map((v, i) => {
 🏷 *Grupo:* ${groupName}
 
 ━━━━━━━━━━━━━━
-*Powered by*: ***Garfield Bot Oficial*** 🍕
+*Powered by*: ***COTTI BOTS x Marie*** 🌸
 *Tip:* Usa .ytmp4 o .ytmp3 + el link`
 
         await conn.reply(m.chat, txt, m, { mentions: [m.sender] })
@@ -44,7 +44,7 @@ ${results.map((v, i) => {
     } catch (e) {
         console.error(e)
         await m.react('❌')
-        m.reply('🍕 *Error:* No se pudo realizar la búsqueda.')
+        m.reply('😿 *Marie dice: Error, no se pudo realizar la búsqueda.*')
     }
 }
 
