@@ -82,8 +82,8 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
 
     // IMAGENES ROTATORIAS
     const images = [
-      'https://files.evogb.win/QFXQtu.jpg',
-      'https://files.evogb.win/E2yVdA.jpg'
+      'https://files.evogb.win/ySkXCm.jpg',
+      'https://files.evogb.win/ySkXCm.jpg'
     ]
     const imageUrl = { url: images[Math.floor(Math.random() * images.length)] }
 
