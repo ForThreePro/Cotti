@@ -14,14 +14,14 @@ const handler = async (m, { conn }) => {
     const q = m.quoted ? m.quoted : m
     const mime = (q.msg || q).mimetype || ''
 
-    if (!/video/.test(mime)) return m.reply('❌ Responde a un video para extraer su audio.')
+    if (!/video/.test(mime)) return m.reply('🐱 *COTTI BOTS* \n❌ Marie dice: Responde a un video para extraer su audio~')
 
-    await react(conn, m, "⏳")
+    await react(conn, m, "🎀")
 
     let tempVideo
     let tempAudio
     try {
-        await m.reply('⏳ Extrayendo audio del video...')
+        await m.reply('🎀 *COTTI BOTS* \n⏳ Marie está extrayendo el audio... 🐾')
 
         const videoBuffer = await q.download()
         if (!videoBuffer) throw new Error('No se pudo obtener el buffer del video.')
@@ -45,21 +45,21 @@ const handler = async (m, { conn }) => {
         ], { timeout: 120000 })
 
         const audioBuffer = await fs.readFile(tempAudio)
-        
+
         await conn.sendMessage(m.chat, {
             audio: audioBuffer,
             mimetype: 'audio/mpeg',
-            fileName: 'audio_extraido.mp3',
+            fileName: 'COTTI_BOTS_Marie.mp3',
             ptt: false
         }, { quoted: m })
 
-        await react(conn, m, "✅")
-        await m.reply('✅ AUDIO EXTRAÍDO CORRECTAMENTE')
+        await react(conn, m, "💖")
+        await m.reply('💖 *COTTI BOTS* \n✅ ¡Audio extraído! Gracias por usar a Marie 🪷\nBot: +56 9 4256 0740')
 
     } catch (e) {
         console.error(e)
-        await react(conn, m, "❌")
-        await m.reply('❌ ERROR AL PROCESAR EL ARCHIVO: ' + e.message)
+        await react(conn, m, "😿")
+        await m.reply('😿 *COTTI BOTS* \n❌ Error: ' + e.message + '\nSoporte: +56 9 3130 0864')
     } finally {
         await fs.unlink(tempVideo).catch(() => {})
         await fs.unlink(tempAudio).catch(() => {})
