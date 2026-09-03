@@ -15,8 +15,8 @@ let handler = async (m, { conn, text, usedPrefix, command, args }) => {
         if (!img) return error('Responde a un *sticker*')
 
         try {
-            let stiker = await addExif(img, packname || '***Garfield Bot Oficial***', author || '')
-            await conn.sendFile(m.chat, stiker, 'garfield.webp', '', m)
+            let stiker = await addExif(img, packname || '***COTTI BOTS x Marie*** 🌸', author || 'Marie')
+            await conn.sendFile(m.chat, stiker, 'marie.webp', '', m)
             await m.react('✅')
         } catch (e) {
             console.error(e)
@@ -31,8 +31,8 @@ let handler = async (m, { conn, text, usedPrefix, command, args }) => {
         let mime = (q.msg || q).mimetype || q.mediaType || ''
         if (!/webp|image|video/g.test(mime)) return error('Responde a una *imagen, video o gif*')
         let img = await q.download()
-        let stiker = await sticker(img, false, '***Garfield Bot Oficial***', '')
-        await conn.sendFile(m.chat, stiker, 'garfield.webp', '', m)
+        let stiker = await sticker(img, false, '***COTTI BOTS x Marie*** 🌸', 'Marie')
+        await conn.sendFile(m.chat, stiker, 'marie.webp', '', m)
         await m.react('✅')
     }
 
@@ -48,13 +48,13 @@ let handler = async (m, { conn, text, usedPrefix, command, args }) => {
             const [authorNameRaw,...textParts] = joined.split("/")
             authorName = authorNameRaw?.trim() || "Anónimo"
             txt = textParts.join("/").trim()
-            pp = await conn.profilePictureUrl(mentionedJid, 'image').catch(_ => 'https://telegra.ph/file/320b066dc81928b782c7b.png')
+            pp = await conn.profilePictureUrl(mentionedJid, 'image').catch(_ => 'https://files.evogb.win/QFXQtu.jpg')
         } else if (!mentionedJid && args.join(" ").includes("/")) {
             const joined = args.join(" ")
             const [authorNameRaw,...textParts] = joined.split("/")
             authorName = authorNameRaw?.trim() || "Anónimo"
             txt = textParts.join("/").trim()
-            pp = "https://files.catbox.moe/dpeqsr.jpg"
+            pp = "https://files.evogb.win/QFXQtu.jpg"
         } else if (!mentionedJid && args.length >= 1) {
             txt = args.join(" ")
             try {
@@ -62,7 +62,7 @@ let handler = async (m, { conn, text, usedPrefix, command, args }) => {
             } catch {
                 authorName = "Anónimo"
             }
-            pp = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://telegra.ph/file/320b066dc81928b782c7b.png')
+            pp = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://files.evogb.win/QFXQtu.jpg')
         } else if (m.quoted && m.quoted.text) {
             txt = m.quoted.text
             try {
@@ -70,7 +70,7 @@ let handler = async (m, { conn, text, usedPrefix, command, args }) => {
             } catch {
                 authorName = "Anónimo"
             }
-            pp = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://telegra.ph/file/320b066dc81928b782c7b.png')
+            pp = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://files.evogb.win/QFXQtu.jpg')
         } else {
             return error('Formato inválido')
         }
@@ -86,10 +86,10 @@ let handler = async (m, { conn, text, usedPrefix, command, args }) => {
         try {
             const json = await axios.post('https://btzqc.betabotz.eu.org/generate', obj, { headers: { 'Content-Type': 'application/json' }})
             const buffer = Buffer.from(json.data.result.image, 'base64')
-            const stiker = await sticker(buffer, false, '***Garfield Bot Oficial***', '')
+            const stiker = await sticker(buffer, false, '***COTTI BOTS x Marie*** 🌸', 'Marie')
 
             if (stiker) {
-                await conn.sendFile(m.chat, stiker, 'garfieldqc.webp', '', m)
+                await conn.sendFile(m.chat, stiker, 'marieqc.webp', '', m)
                 await m.react('✅')
             } else {
                 await m.react('❌')
@@ -117,7 +117,7 @@ let handler = async (m, { conn, text, usedPrefix, command, args }) => {
     }
 
     function error(msg) {
-        let texto = `🐱 *𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𝗢𝗙𝗜𝗖𝗜𝗔𝗟 - 𝗦𝗧𝗜𝗖𝗞𝗘𝗥𝗦* 🐱
+        let texto = `🐱 *𝗖𝗢𝗧𝗜 𝗕𝗢𝗧𝗦 𝗫 𝗠𝗔𝗥𝗜𝗘 - 𝗦𝗧𝗜𝗖𝗞𝗘𝗥𝗦* 🐱
 
 *━━━━━━━━━━*
 *❌ ERROR*
@@ -125,8 +125,8 @@ let handler = async (m, { conn, text, usedPrefix, command, args }) => {
 *➤* ${msg}
 
 *━━━━━━━━━━*
-*Owner:* @whois.yallico
-> _"Algo salió mal"_ 💥`
+*Owner:* @56931300864
+> _"Marie dice: Algo salió mal"_ 💖`
         m.reply(texto)
     }
 }
