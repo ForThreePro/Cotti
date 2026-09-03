@@ -10,21 +10,21 @@ const handler = async (m, { args, conn }) => {
     if (!args[0]) {
       return conn.reply(
         m.chat,
-        `DESCARGADOR DE FACEBOOK
+        `🐱 *COTTI BOTS - DESCARGADOR* 🌸
 
-Uso:.facebook <link de facebook>
+Marie dice: Usa.facebook <link de facebook>
 Ejemplo:.facebook https://www.facebook.com/watch?v=123`,
         m
       )
     }
 
     if (!args[0].match(/facebook\.com|fb\.watch/)) {
-      await react(conn, m, '❌')
-      return m.reply('⚠️ El enlace no es válido de Facebook.')
+      await react(conn, m, '😿')
+      return m.reply('🐱 *COTTI BOTS* \n❌ Ese enlace no es de Facebook~')
     }
 
-    await react(conn, m, '⏳')
-    await m.reply('⏳ Procesando video...')
+    await react(conn, m, '🎀')
+    await m.reply('🎀 *COTTI BOTS* \n⏳ Marie está procesando tu video... 🐾')
 
     const api = `https://yosoyyo-api-ofc.onrender.com/api/facebook?url=${encodeURIComponent(args[0])}&apiKey=yosoyyo_sk_2nbk5m69`
     const res = await fetch(api)
@@ -39,10 +39,10 @@ Ejemplo:.facebook https://www.facebook.com/watch?v=123`,
     const videoUrl = media.video_hd || media.video_sd
 
     if (!videoUrl) {
-      await react(conn, m, '❌')
+      await react(conn, m, '😿')
       return conn.reply(
         m.chat,
-        '❌ No se pudo obtener el enlace de descarga del video.',
+        '🐱 *COTTI BOTS* \n❌ No pude obtener el enlace de descarga del video~',
         m
       )
     }
@@ -51,27 +51,27 @@ Ejemplo:.facebook https://www.facebook.com/watch?v=123`,
     const duracion = info.duration? `\n⏱️ DURACIÓN: ${info.duration}` : ''
     const autorTxt = author.username? `\n👤 AUTOR: ${author.username}` : ''
 
-    let txt = `╭─「 VIDEO DE FACEBOOK 」
+    let txt = `╭─「 COTTI BOTS x MARIE 🌸 」
 │
 │ 📝 TÍTULO: ${titulo}${duracion}${autorTxt}
 │
 ╰───────────────────────
-Descargando...`
+💖 Descargando para ti...`
 
     await conn.sendFile(
       m.chat,
       videoUrl,
-      'facebook.mp4',
+      'COTTI_BOTS_Marie.mp4',
       txt,
       m
     )
 
-    await react(conn, m, '✅')
+    await react(conn, m, '💖')
 
   } catch (error) {
     console.log('Facebook API Error:', error.message)
-    await react(conn, m, '❌')
-    await m.reply(`❌ Error: ${error.message}`)
+    await react(conn, m, '😿')
+    await m.reply(`🐱 *COTTI BOTS* \n❌ Error: ${error.message}\nSoporte: +56 9 3130 0864`)
   }
 }
 
