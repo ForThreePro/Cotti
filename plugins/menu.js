@@ -7,7 +7,7 @@ let handler = async (m, { conn, usedPrefix }) => {
   let taguser = m.mentionedJid && m.mentionedJid[0]? m.mentionedJid[0] : m.quoted? m.quoted.sender : m.sender
 
   // Solo 1 foto
-  let img = { url: 'https://files.evogb.win/QFXQtu.jpg' }
+  let img = { url: 'https://files.evogb.win/ySkXCm.jpg' }
 
   let uptime = process.uptime() * 1000
   let _uptime = clockString(uptime)
