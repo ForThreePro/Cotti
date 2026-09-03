@@ -27,27 +27,33 @@ let handler = async (m, { conn, args }) => {
     let reqXp = (level + 1) * 100
     let xpProgress = exp - (level * 100)
 
-    const caption = `╭─「 PERFIL DE USUARIO 」
-│
-│ 👤 *NOMBRE:* ${name}
-│ 📱 *NUMERO:* @${number}
-│ 🏷️ *RANGO:* ${role}
-│
-│ 📊 *NIVEL:* ${level}
-│ ⭐ *EXP:* ${xpProgress}/${reqXp}
-│ 💰 *DINERO:* $${money}
-│ 💎 *DIAMANTES:* ${limit}
-│
-│ ✅ *REGISTRO:* ${registered? 'Si' : 'No'}
-│
-╰───────────────────────`
+    const caption = `🐱 𓆩 𝗣𝗘𝗥𝗙𝗜𝗟 𝗗𝗘 𝗨𝗦𝗨𝗔𝗥𝗜𝗢 𓆪 🐱
+
+.⃟𖥔 ݁. 𖦹˙— \`\`COTTI BOTS\`\` —˙𖦹.💖꒷
+
+──🌸 *DATOS* ╏ 💚
+💚 ➛ *Nombre:* ${name}
+💚 ➛ *Numero:* @${number}
+💚 ➛ *Rango:* ${role}
+
+──🌸 *ESTADISTICAS* ╏ 💚
+💚 ➛ *Nivel:* ${level}
+💚 ➛ *Exp:* ${xpProgress}/${reqXp}
+💚 ➛ *Dinero:* $${money}
+💚 ➛ *Diamantes:* ${limit}
+
+──🌸 *ESTADO* ╏ 🌸
+🌸 ➛ *Registro:* ${registered? 'Si' : 'No'}
+
+━━━━━━━━━━━
+*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
     // Obtener foto de perfil
     let pp
     try {
       pp = await conn.profilePictureUrl(who, 'image')
     } catch {
-      pp = 'https://i.ibb.co/1p9Q0V3/default.jpg' // imagen por defecto
+      pp = 'https://files.evogb.win/QFXQtu.jpg' // imagen por defecto COTTI
     }
 
     await conn.sendMessage(m.chat, {
@@ -61,7 +67,7 @@ let handler = async (m, { conn, args }) => {
   } catch (e) {
     console.error(e)
     await react(conn, m, "❌")
-    await m.reply(`❌ Ocurrió un error al obtener el perfil.`)
+    await m.reply(`😿 *Marie dice: Ocurrió un error al obtener el perfil.*`)
   }
 }
 
