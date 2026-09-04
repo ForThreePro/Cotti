@@ -1,23 +1,32 @@
 import axios from 'axios'
 
-let handler = async (m, { conn, args }) => {
+let handler = async (m, { conn, args, text }) => {
   let user = m.sender
   let nombre = await conn.getName(user)
   let imgDefault = 'https://files.evogb.win/ySkXCm.jpg'
 
   const monedas = {
-    peru: 'PEN', argentina: 'ARS', mexico: 'MXN',
-    uruguayo: 'UYU', uruguay: 'UYU', paraguay: 'PYG',
-    colombia: 'COP', bolivia: 'BOB'
+    peru: 'PEN',
+    argentina: 'ARS',
+    mexico: 'MXN',
+    uruguayo: 'UYU',
+    paraguay: 'PYG',
+    colombia: 'COP',
+    bolivia: 'BOB',
+    chile: 'CLP'
   }
 
   const nombres = {
-    PEN: 'Sol Peruano', ARS: 'Peso Argentino', MXN: 'Peso Mexicano',
-    UYU: 'Peso Uruguayo', PYG: 'Guaraní Paraguayo',
-    COP: 'Peso Colombiano', BOB: 'Boliviano'
+    PEN: 'Sol Peruano',
+    ARS: 'Peso Argentino',
+    MXN: 'Peso Mexicano',
+    UYU: 'Peso Uruguayo',
+    PYG: 'Guaraní Paraguayo',
+    COP: 'Peso Colombiano',
+    BOB: 'Boliviano',
+    CLP: 'Peso Chileno'
   }
 
-  // Función para obtener foto segura
   async function getFoto() {
     try {
       let pp = await conn.profilePictureUrl(user, 'image')
@@ -35,24 +44,43 @@ let handler = async (m, { conn, args }) => {
     let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗚𝗢𝗚𝗟𝗘 𓆪 🐱\n\n`
     menu += `.⃟𖥔 ݁. 𖦹˙— \`\`COTTI BOTS x MARIE\`\` —˙𖦹.💖꒷\n\n`
     menu += `──🌸 *¿COMO SE USA?* ╏ 💚\n\n`
-    menu += `💚 ➛ *.convertir <cantidad> <de> <a>*\n`
-    menu += `💚 ➛ *.convertir <cantidad> <de> todo*\n`
-    menu += `💚 ➛ *.convertir <cantidad> <de> blue*\n\n`
+    menu += `💚 ➛ *.convertir <cantidad> <pais1> <pais2>*\n`
+    menu += `💚 ➛ *.convertir <cantidad> <pais1> / <pais2>*\n`
+    menu += `💚 ➛ *.convertir <cantidad> <pais> todo*\n\n`
     menu += `──🌸 *EJEMPLOS* ╏ 💚\n`
-    menu += `💚 ➛ *.convertir 100 Peru Argentina*\n`
-    menu += `💚 ➛ *.convertir 1 Peru todo*\n`
-    menu += `💚 ➛ *.convertir 1 Peru blue*\n\n`
-    menu += `──🌸 *PAISES* ╏ 💚\nPeru PEN | Argentina ARS | Mexico MXN\nUruguay UYU | Paraguay PYG | Colombia COP | Bolivia BOB\n`
+    menu += `💚 ➛ *.convertir 100 Peru Chile*\n`
+    menu += `💚 ➛ *.convertir 100 Peru / Chile*\n`
+    menu += `💚 ➛ *.convertir 1500 Argentina Mexico*\n`
+    menu += `💚 ➛ *.convertir 1 Peru todo*\n\n`
+    menu += `──🌸 *PAISES DISPONIBLES* ╏ 💚\n`
+    menu += `💚 ➛ Peru = PEN\n`
+    menu += `💚 ➛ Argentina = ARS\n`
+    menu += `💚 ➛ Mexico = MXN\n`
+    menu += `💚 ➛ Uruguayo = UYU\n`
+    menu += `💚 ➛ Paraguay = PYG\n`
+    menu += `💚 ➛ Colombia = COP\n`
+    menu += `💚 ➛ Bolivia = BOB\n`
+    menu += `💚 ➛ Chile = CLP\n`
     menu += `━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
     return await conn.sendMessage(m.chat, { image: buffer, caption: menu }, { quoted: m })
   }
 
-  let cantidad = parseFloat(args[0])
-  let de = args[1]? args[1].toLowerCase() : ''
-  let a = args[2]? args[2].toLowerCase() : ''
+  let cantidad, de, a
 
-  if (!monedas[de]) return m.reply(`❌ País no válido`)
+  if (text.includes('/')) {
+    let partes = text.split('/').map(v => v.trim())
+    let izq = partes[0].trim().split(' ')
+    cantidad = parseFloat(izq[0])
+    de = izq.slice(1).join(' ').toLowerCase()
+    a = partes[1].toLowerCase()
+  } else {
+    cantidad = parseFloat(args[0])
+    de = args[1]? args[1].toLowerCase() : ''
+    a = args[2]? args[2].toLowerCase() : ''
+  }
+
+  if (!monedas[de]) return m.reply(`❌ País origen no válido\nPaíses: Peru, Argentina, Mexico, Uruguayo, Paraguay, Colombia, Bolivia, Chile`)
   if (isNaN(cantidad)) return m.reply(`❌ Pon una cantidad válida`)
 
   let monedaDe = monedas[de]
@@ -99,6 +127,7 @@ let handler = async (m, { conn, args }) => {
       let tasa = tasas[monedaA.toLowerCase()]
       let resultado = (cantidad * tasa).toFixed(2)
       texto += `💚 ➛ *${cantidad} ${monedaDe}* = *${resultado} ${monedaA}*\n`
+      texto += `Tasa: 1 ${monedaDe} = ${tasa} ${monedaA}\n`
     }
 
     texto += `\n*Actualizado:* ${new Date().toLocaleString('es-PE')}`
