@@ -22,6 +22,8 @@ let handler = async (m, { conn, args, text }) => {
     PYG: '🇵🇾', COP: '🇨🇴', BOB: '🇧🇴', CLP: '🇨🇱'
   }
 
+  const prexPaises = ['PEN', 'ARS', 'CLP', 'UYU'] // Solo estos tienen Prex
+
   async function getFoto() {
     try {
       let pp = await conn.profilePictureUrl(user, 'image')
@@ -32,25 +34,36 @@ let handler = async (m, { conn, args, text }) => {
     }
   }
 
+  // OBTENER TASAS PREX
+  async function getTasasPrex() {
+    try {
+      const { data } = await axios.get('https://api.prexcard.com/api/exchange-rate')
+      // data: { buy, sell } para cada moneda vs USD aprox
+      return data
+    } catch {
+      return null
+    }
+  }
+
   if (!args[0]) {
     let ppUrl = await getFoto()
     let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
 
-    let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗠𝗨𝗟𝗧𝗜𝗗𝗜𝗩𝗜𝗦𝗔𝗦 𓆪 🐱\n\n`
+    let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗣𝗥𝗘𝗫 𓆪 🐱\n\n`
     menu += `╭─💖─ \`\`COTTI BOTS x MARIE\`\` ─💖─╮\n`
     menu += `│\n`
     menu += `│ 💚 *¿COMO USARLO?*\n`
     menu += `│ ➛ \`.convertir 100 Peru Chile\`\n`
-    menu += `│ ➛ \`.convertir 100 Peru / Chile\`\n`
+    menu += `│ ➛ \`.convertir 100 Peru / Argentina\`\n`
     menu += `│ ➛ \`.convertir 1 Peru todo\`\n`
-    menu += `│ ➛ \`.convertir 1 Peru blue\`\n`
     menu += `│\n`
-    menu += `│ 🌎 *PAISES DISPONIBLES*\n`
-    menu += `│ 🇵🇪 Peru | 🇦🇷 Argentina | 🇲🇽 Mexico\n`
-    menu += `│ 🇺🇾 Uruguayo | 🇵🇾 Paraguay\n`
-    menu += `│ 🇨🇴 Colombia | 🇧🇴 Bolivia | 🇨🇱 Chile\n`
+    menu += `│ 🌎 *PAISES*\n`
+    menu += `│ 🇵🇪 Peru PREX | 🇦🇷 Argentina PREX\n`
+    menu += `│ 🇨🇱 Chile PREX | 🇺🇾 Uruguayo PREX\n`
+    menu += `│ 🇲🇽 Mexico | 🇵🇾 Paraguay\n`
+    menu += `│ 🇨🇴 Colombia | 🇧🇴 Bolivia\n`
     menu += `│\n`
-    menu += `╰─✨ Tasas oficiales de Google ✨─╯\n`
+    menu += `╰─✨ Tasa Prex para LATAM ✨─╯\n`
     menu += `\n━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
     return await conn.sendMessage(m.chat, { image: buffer, caption: menu }, { quoted: m })
@@ -69,10 +82,11 @@ let handler = async (m, { conn, args, text }) => {
     a = args[2]? args[2].toLowerCase() : ''
   }
 
-  if (!monedas[de]) return m.reply(`❌ País origen no válido\nPaíses: Peru, Argentina, Mexico, Uruguayo, Paraguay, Colombia, Bolivia, Chile`)
+  if (!monedas[de]) return m.reply(`❌ País origen no válido`)
   if (isNaN(cantidad)) return m.reply(`❌ Pon una cantidad válida`)
 
   let monedaDe = monedas[de]
+  let tasasPrex = await getTasasPrex()
 
   try {
     await m.react('⏳')
@@ -85,6 +99,7 @@ let handler = async (m, { conn, args, text }) => {
 
     let texto = `🐱 𓆩 𝗥𝗘𝗦𝗨𝗟𝗧𝗔𝗗𝗢 𝗗𝗘 ${nombre.toUpperCase()} 𓆪 🐱\n\n`
     texto += `╭─💰─ \`\`COTTI BOTS x MARIE\`\` ─💰─╮\n`
+    let usoPrex = false
 
     if (a === 'todo') {
       texto += `│\n`
@@ -95,44 +110,44 @@ let handler = async (m, { conn, args, text }) => {
       for (let mon in monedas) {
         let monCod = monedas[mon]
         if (monCod!== monedaDe) {
-          let res = (cantidad * tasas[monCod.toLowerCase()])
-          texto += `│ ${banderas[monCod]} *${res.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monCod}*\n`
-          texto += `│ ${nombres[monCod]}\n`
+          let res
+          // Si ambos son Prex, usar conversión cruzada via USD Prex
+          if (prexPaises.includes(monedaDe) && prexPaises.includes(monCod) && tasasPrex) {
+            let usd = cantidad / tasasPrex[monedaDe.toLowerCase()].sell
+            res = usd * tasasPrex[monCod.toLowerCase()].sell
+            usoPrex = true
+          } else {
+            res = cantidad * tasas[monCod.toLowerCase()]
+          }
+          texto += `│ ${banderas[monCod]} *${res.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monCod}*`
+          if (prexPaises.includes(monCod) && usoPrex) texto += ` \`\`PREX\`\``
+          texto += `\n│ ${nombres[monCod]}\n`
         }
       }
-      if (monedaDe === 'PEN') {
-        const { data: dolar } = await axios.get('https://dolarapi.com/v1/dolares/blue')
-        let usd_a_pen = tasas['usd']
-        let pen_a_usd = 1/usd_a_pen
-        let ars_blue = pen_a_usd * dolar.venta
-        let resBlue = (cantidad * ars_blue)
-        texto += `│ 🇦🇷 *${resBlue.toLocaleString(undefined,{maximumFractionDigits: 2})} ARS* \`\`BLUE\`\`\n`
-        texto += `│ Peso Argentino Blue\n`
-      }
-
-    } else if (a === 'blue' && monedaDe === 'PEN') {
-      const { data: dolar } = await axios.get('https://dolarapi.com/v1/dolares/blue')
-      let usd_a_pen = tasas['usd']
-      let pen_a_usd = 1/usd_a_pen
-      let ars_blue = pen_a_usd * dolar.venta
-      let resultado = (cantidad * ars_blue)
-      texto += `│\n`
-      texto += `│ 🌸 *DE:* ${banderas[monedaDe]} ${cantidad.toLocaleString()} ${monedaDe}\n`
-      texto += `│ 🌸 *A:* 🇦🇷 ${resultado.toLocaleString(undefined,{maximumFractionDigits: 2})} ARS BLUE\n`
-      texto += `│\n`
-      texto += `│ 💵 Tasa Blue: 1 USD = ${dolar.venta} ARS\n`
 
     } else {
       let monedaA = monedas[a]
       if (!monedaA) return m.reply(`❌ País destino no válido`)
-      let tasa = tasas[monedaA.toLowerCase()]
-      let resultado = (cantidad * tasa)
+
+      let resultado, tasa
+      // USAR PREX SI AMBOS SON DE PREX
+      if (prexPaises.includes(monedaDe) && prexPaises.includes(monedaA) && tasasPrex) {
+        let usd = cantidad / tasasPrex[monedaDe.toLowerCase()].sell
+        resultado = usd * tasasPrex[monedaA.toLowerCase()].sell
+        tasa = tasasPrex[monedaA.toLowerCase()].sell / tasasPrex[monedaDe.toLowerCase()].sell
+        usoPrex = true
+      } else {
+        tasa = tasas[monedaA.toLowerCase()]
+        resultado = cantidad * tasa
+      }
+
       texto += `│\n`
       texto += `│ 🌸 *DE:* ${banderas[monedaDe]} ${cantidad.toLocaleString()} ${monedaDe}\n`
       texto += `│ ${nombres[monedaDe]}\n`
       texto += `│\n`
-      texto += `│ ⬇️ *A:* ${banderas[monedaA]} ${resultado.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monedaA}\n`
-      texto += `│ ${nombres[monedaA]}\n`
+      texto += `│ ⬇️ *A:* ${banderas[monedaA]} ${resultado.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monedaA}`
+      if (usoPrex) texto += ` \`\`PREX\`\``
+      texto += `\n│ ${nombres[monedaA]}\n`
       texto += `│\n`
       texto += `│ 📊 Tasa: 1 ${monedaDe} = ${tasa} ${monedaA}\n`
     }
