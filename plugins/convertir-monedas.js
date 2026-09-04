@@ -22,26 +22,23 @@ let handler = async (m, { conn, args, text }) => {
     PYG: '🇵🇾', COP: '🇨🇴', BOB: '🇧🇴', CLP: '🇨🇱'
   }
 
-  const prexPaises = ['PEN', 'ARS', 'CLP', 'UYU'] // Solo estos tienen Prex
+  // TASAS BASE GOOGLE QUE ME DISTE
+  const tasasBase = {
+    PEN_CLP: 279.20,
+    PEN_MXN: 5.04,
+    PEN_ARS: 449.85,
+    PEN_PYG: 1772.21,
+    PEN_UYU: 12.01,
+    PEN_BOB: 3.62,
+    PEN_COP: 940.06
+  }
 
   async function getFoto() {
     try {
       let pp = await conn.profilePictureUrl(user, 'image')
-      if (typeof pp!== 'string') throw new Error('No string')
-      return pp
+      return typeof pp === 'string'? pp : imgDefault
     } catch {
       return imgDefault
-    }
-  }
-
-  // OBTENER TASAS PREX
-  async function getTasasPrex() {
-    try {
-      const { data } = await axios.get('https://api.prexcard.com/api/exchange-rate')
-      // data: { buy, sell } para cada moneda vs USD aprox
-      return data
-    } catch {
-      return null
     }
   }
 
@@ -49,21 +46,22 @@ let handler = async (m, { conn, args, text }) => {
     let ppUrl = await getFoto()
     let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
 
-    let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗣𝗥𝗘𝗫 𓆪 🐱\n\n`
+    let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗚𝗢𝗢𝗚𝗟𝗘 𓆪 🐱\n\n`
     menu += `╭─💖─ \`\`COTTI BOTS x MARIE\`\` ─💖─╮\n`
     menu += `│\n`
-    menu += `│ 💚 *¿COMO USARLO?*\n`
+    menu += `│ 💚 *USO:*\n`
     menu += `│ ➛ \`.convertir 100 Peru Chile\`\n`
     menu += `│ ➛ \`.convertir 100 Peru / Argentina\`\n`
     menu += `│ ➛ \`.convertir 1 Peru todo\`\n`
     menu += `│\n`
-    menu += `│ 🌎 *PAISES*\n`
-    menu += `│ 🇵🇪 Peru PREX | 🇦🇷 Argentina PREX\n`
-    menu += `│ 🇨🇱 Chile PREX | 🇺🇾 Uruguayo PREX\n`
-    menu += `│ 🇲🇽 Mexico | 🇵🇾 Paraguay\n`
-    menu += `│ 🇨🇴 Colombia | 🇧🇴 Bolivia\n`
+    menu += `│ 🌎 *PAISES:* 🇵🇪 🇦🇷 🇲🇽 🇺🇾 🇵🇾 🇨🇴 🇧🇴 🇨🇱\n`
     menu += `│\n`
-    menu += `╰─✨ Tasa Prex para LATAM ✨─╯\n`
+    menu += `│ ⚠️ *IMPORTANTE*\n`
+    menu += `│ Esto es precio base Google\n`
+    menu += `│ Comisión de apps ya varia\n`
+    menu += `│ depende el banco etc\n`
+    menu += `│\n`
+    menu += `╰─✨ Tasas fijas actualizables ✨─╯\n`
     menu += `\n━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
     return await conn.sendMessage(m.chat, { image: buffer, caption: menu }, { quoted: m })
@@ -86,42 +84,26 @@ let handler = async (m, { conn, args, text }) => {
   if (isNaN(cantidad)) return m.reply(`❌ Pon una cantidad válida`)
 
   let monedaDe = monedas[de]
-  let tasasPrex = await getTasasPrex()
 
   try {
     await m.react('⏳')
     let ppUrl = await getFoto()
     let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
 
-    const urlOficial = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${monedaDe.toLowerCase()}.json`
-    const { data: dataOficial } = await axios.get(urlOficial)
-    let tasas = dataOficial[monedaDe.toLowerCase()]
-
     let texto = `🐱 𓆩 𝗥𝗘𝗦𝗨𝗟𝗧𝗔𝗗𝗢 𝗗𝗘 ${nombre.toUpperCase()} 𓆪 🐱\n\n`
-    texto += `╭─💰─ \`\`COTTI BOTS x MARIE\`\` ─💰─╮\n`
-    let usoPrex = false
+    texto += `╭─💜─ \`\`COTTI BOTS x MARIE\`\` ─💜─╮\n`
 
     if (a === 'todo') {
-      texto += `│\n`
-      texto += `│ 🌸 *CONVIRTIENDO:* ${banderas[monedaDe]} ${cantidad.toLocaleString()} ${monedaDe}\n`
-      texto += `│ ${nombres[monedaDe]}\n`
-      texto += `│\n`
-      texto += `│ ────────── *RESULTADOS* ──────────\n`
+      texto += `│\n│ 🌸 *CONVIRTIENDO:* ${banderas[monedaDe]} ${cantidad.toLocaleString()} ${monedaDe}\n│ ${nombres[monedaDe]}\n│\n│ ────────── *RESULTADOS* ──────────\n`
+
       for (let mon in monedas) {
         let monCod = monedas[mon]
         if (monCod!== monedaDe) {
-          let res
-          // Si ambos son Prex, usar conversión cruzada via USD Prex
-          if (prexPaises.includes(monedaDe) && prexPaises.includes(monCod) && tasasPrex) {
-            let usd = cantidad / tasasPrex[monedaDe.toLowerCase()].sell
-            res = usd * tasasPrex[monCod.toLowerCase()].sell
-            usoPrex = true
-          } else {
-            res = cantidad * tasas[monCod.toLowerCase()]
-          }
-          texto += `│ ${banderas[monCod]} *${res.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monCod}*`
-          if (prexPaises.includes(monCod) && usoPrex) texto += ` \`\`PREX\`\``
-          texto += `\n│ ${nombres[monCod]}\n`
+          let key = `${monedaDe}_${monCod}`
+          let keyInversa = `${monCod}_${monedaDe}`
+          let tasa = tasasBase[key] || (1 / tasasBase[keyInversa])
+          let res = cantidad * tasa
+          texto += `│ ${banderas[monCod]} *${res.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monCod}*\n│ ${nombres[monCod]}\n`
         }
       }
 
@@ -129,31 +111,19 @@ let handler = async (m, { conn, args, text }) => {
       let monedaA = monedas[a]
       if (!monedaA) return m.reply(`❌ País destino no válido`)
 
-      let resultado, tasa
-      // USAR PREX SI AMBOS SON DE PREX
-      if (prexPaises.includes(monedaDe) && prexPaises.includes(monedaA) && tasasPrex) {
-        let usd = cantidad / tasasPrex[monedaDe.toLowerCase()].sell
-        resultado = usd * tasasPrex[monedaA.toLowerCase()].sell
-        tasa = tasasPrex[monedaA.toLowerCase()].sell / tasasPrex[monedaDe.toLowerCase()].sell
-        usoPrex = true
-      } else {
-        tasa = tasas[monedaA.toLowerCase()]
-        resultado = cantidad * tasa
-      }
+      let key = `${monedaDe}_${monedaA}`
+      let keyInversa = `${monedaA}_${monedaDe}`
+      let tasa = tasasBase[key] || (1 / tasasBase[keyInversa])
+      let resultado = cantidad * tasa
 
-      texto += `│\n`
-      texto += `│ 🌸 *DE:* ${banderas[monedaDe]} ${cantidad.toLocaleString()} ${monedaDe}\n`
-      texto += `│ ${nombres[monedaDe]}\n`
-      texto += `│\n`
-      texto += `│ ⬇️ *A:* ${banderas[monedaA]} ${resultado.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monedaA}`
-      if (usoPrex) texto += ` \`\`PREX\`\``
-      texto += `\n│ ${nombres[monedaA]}\n`
-      texto += `│\n`
-      texto += `│ 📊 Tasa: 1 ${monedaDe} = ${tasa} ${monedaA}\n`
+      texto += `│\n│ 🌸 *DE:* ${banderas[monedaDe]} ${cantidad.toLocaleString()} ${monedaDe}\n│ ${nombres[monedaDe]}\n│\n`
+      texto += `│ ⬇️ *A:* ${banderas[monedaA]} ${resultado.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monedaA}\n`
+      texto += `│ ${nombres[monedaA]}\n│\n│ 📊 Tasa: 1 ${monedaDe} = ${tasa} ${monedaA}\n`
     }
 
-    texto += `│\n`
-    texto += `╰─🕐 Actualizado: ${new Date().toLocaleString('es-PE')} ─╯\n`
+    texto += `│\n│ ⚠️ *NOTA:* Precio base Google\n`
+    texto += `│ Comisión de apps/bancos varia\n`
+    texto += `│\n╰─🕐 Actualizado manual ─╯\n`
     texto += `\n━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
     await conn.sendMessage(m.chat, { image: buffer, caption: texto }, { quoted: m })
