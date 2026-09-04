@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 let handler = async (m, { conn, args }) => {
-  let cantidad = args[0]? parseFloat(args[0]) : 1
-  let de = args[1]? args[1].toLowerCase() : 'peru'
-  let a = args[2]? args[2].toLowerCase() : ''
+  let user = m.sender
+  let nombre = await conn.getName(user)
+  let ppUrl = await conn.profilePictureUrl(user, 'image').catch(_ => 'https://i.imgur.com/8Km9tLL.png')
 
   const monedas = {
     peru: 'PEN', argentina: 'ARS', mexico: 'MXN',
@@ -17,19 +17,48 @@ let handler = async (m, { conn, args }) => {
     COP: 'Peso Colombiano', BOB: 'Boliviano'
   }
 
+  // SI NO PONE NADA, MOSTRAR AYUDA
+  if (!args[0]) {
+    let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗚𝗢𝗚𝗟𝗘 𓆪 🐱\n\n`
+    menu += `.⃟𖥔 ݁. 𖦹˙— \`\`COTTI BOTS x MARIE\`\` —˙𖦹.💖꒷\n\n`
+    menu += `──🌸 *¿COMO SE USA?* ╏ 💚\n\n`
+    menu += `💚 ➛ *.convertir <cantidad> <de> <a>*\n`
+    menu += `💚 ➛ *.convertir <cantidad> <de> todo*\n`
+    menu += `💚 ➛ *.convertir <cantidad> <de> blue*\n\n`
+    menu += `──🌸 *EJEMPLOS* ╏ 💚\n\n`
+    menu += `💚 ➛ *.convertir 100 Peru Argentina*\n`
+    menu += `💚 ➛ *.convertir 1 Peru todo*\n`
+    menu += `💚 ➛ *.convertir 1 Peru blue*\n\n`
+    menu += `──🌸 *PAISES DISPONIBLES* ╏ 💚\n`
+    menu += `💚 ➛ Peru = PEN - Sol\n`
+    menu += `💚 ➛ Argentina = ARS - Peso Arg\n`
+    menu += `💚 ➛ Mexico = MXN - Peso Mex\n`
+    menu += `💚 ➛ Uruguay = UYU - Peso Uru\n`
+    menu += `💚 ➛ Paraguay = PYG - Guaraní\n`
+    menu += `💚 ➛ Colombia = COP - Peso Col\n`
+    menu += `💚 ➛ Bolivia = BOB - Boliviano\n\n`
+    menu += `*Nota:* Incluye tasa BLUE para Argentina\n`
+    menu += `*Actualizado:* Google API cada hora\n`
+    menu += `━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
+
+    return await conn.sendMessage(m.chat, {
+      image: { url: ppUrl },
+      caption: menu
+    }, { quoted: m })
+  }
+
+  let cantidad = parseFloat(args[0])
+  let de = args[1]? args[1].toLowerCase() : ''
+  let a = args[2]? args[2].toLowerCase() : ''
+
   if (!monedas[de]) return m.reply(`❌ País no válido\nUsa: Peru, Argentina, Mexico, Uruguay, Paraguay, Colombia, Bolivia`)
 
   let monedaDe = monedas[de]
-  let user = m.sender
-  let nombre = await conn.getName(user)
 
   try {
     await m.react('⏳')
 
-    // 1. Foto de perfil del usuario que pidió
-    let ppUrl = await conn.profilePictureUrl(user, 'image').catch(_ => 'https://i.imgur.com/8Km9tLL.png')
-
-    // 2. API Oficial Google
+    // API Oficial Google
     const urlOficial = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${monedaDe.toLowerCase()}.json`
     const { data: dataOficial } = await axios.get(urlOficial)
     let tasas = dataOficial[monedaDe.toLowerCase()]
@@ -46,7 +75,6 @@ let handler = async (m, { conn, args }) => {
           texto += `💚 ➛ ${res} ${monCod} - ${nombres[monCod]}\n`
         }
       }
-      // Agregar BLUE si es desde PEN
       if (monedaDe === 'PEN') {
         const { data: dolar } = await axios.get('https://dolarapi.com/v1/dolares/blue')
         let usd_a_pen = tasas['usd']
@@ -78,7 +106,6 @@ let handler = async (m, { conn, args }) => {
     texto += `\n*Foto de:* ${ppUrl}`
     texto += `\n━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
-    // 3. Enviar foto del usuario sin marca de agua
     await conn.sendMessage(m.chat, {
       image: { url: ppUrl },
       caption: texto
@@ -91,7 +118,7 @@ let handler = async (m, { conn, args }) => {
   }
 }
 
-handler.help = ['convertir <cantidad> <de> <a>', 'convertir <cantidad> <de> todo']
+handler.help = ['convertir']
 handler.tags = ['tools']
 handler.command = ['convertir', 'conv', 'cambio']
 
