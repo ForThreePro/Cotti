@@ -1,7 +1,7 @@
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 
 const handler = async (m, { conn, args, isAdmin, isOwner }) => {
-  if (!isAdmin &&!isOwner) return conn.reply(m.chat, `🐱 𓆩 ***𝗖𝗢𝗧𝗜 𝗕𝗢𝗧𝗦 𝗢𝗙𝗜𝗖𝗜𝗔𝗟*** 𓆪 🐱\n\n🪷 *Marie dice: Solo admins pueden usar este comando* 🌸`, m)
+  if (!isAdmin &&!isOwner) return conn.reply(m.chat, `🐱 𓆩 ***𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧𝗦 𝗢𝗙𝗜𝗖𝗜𝗔𝗟*** 𓆪 🐱\n\n🪷 *Marie dice: Solo admins pueden usar este comando* 🌸`, m)
   let chat = global.db.data.chats[m.chat]
   if (!chat) global.db.data.chats[m.chat] = {}
 
@@ -12,7 +12,7 @@ const handler = async (m, { conn, args, isAdmin, isOwner }) => {
     chat.bienvenida = false
     await conn.reply(m.chat, `🌸 𓆩 ***𝗕𝗜𝗘𝗡𝗩𝗘𝗡𝗜𝗗𝗔*** 𓆪 🌸\n\n🪷 *Marie desactivó la bienvenida*`, m)
   } else {
-    await conn.reply(m.chat, `🐱 𓆩 ***𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧𝗦 𝗢𝗙𝗜𝗖𝗜𝗔𝗟*** 𓆪 🐱\n\n📌 *Uso:* ${m.prefix}bienvenida on/off\n🪷 *Temática:* Marie 🌸`, m)
+    await conn.reply(m.chat, `🐱 𓆩 ***𝗖𝗢𝗧𝗜 𝗕𝗢𝗧𝗦 𝗢𝗙𝗜𝗖𝗜𝗔𝗟*** 𓆪 🐱\n\n📌 *Uso:* ${m.prefix}bienvenida on/off\n🪷 *Temática:* Marie 🌸`, m)
   }
 }
 
@@ -31,7 +31,14 @@ handler.before = async function (m, { conn, groupMetadata }) {
     const userJid = m.messageStubParameters?.[0] || m.participant
     if (!userJid) return!0
 
-    const pp = 'https://files.evogb.win/ySkXCm.jpg' // SOLO ESTA FOTO
+    // 1. INTENTA FOTO DEL USUARIO
+    // 2. SI NO TIENE, USA TU LINK DE MARIE
+    let pp
+    try {
+      pp = await conn.profilePictureUrl(userJid, 'image')
+    } catch {
+      pp = 'https://files.evogb.win/ySkXCm.jpg' // FOTO FALLBACK MARIE
+    }
 
     const userTag = `@${userJid.split('@')[0]}`
     const groupName = groupMetadata.subject
@@ -62,7 +69,7 @@ handler.before = async function (m, { conn, groupMetadata }) {
 
     if (txt) {
       await conn.sendMessage(m.chat, {
-        image: { url: pp },
+        image: { url: pp }, // manda foto user o la de marie
         caption: txt,
         mentions: [userJid]
       })
