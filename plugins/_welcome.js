@@ -1,4 +1,5 @@
 import { WAMessageStubType } from '@whiskeysockets/baileys'
+import axios from 'axios'
 
 const handler = async (m, { conn, args, isAdmin, isOwner }) => {
   if (!isAdmin &&!isOwner) return conn.reply(m.chat, `🐱 𓆩 ***COTTI BOTS OFICIAL*** 𓆪 🐱\n\n🌸 *Marie dice: Solo admins pueden usar este comando*`, m)
@@ -31,11 +32,16 @@ handler.before = async function (m, { conn, groupMetadata }) {
     const userJid = m.messageStubParameters?.[0] || m.participant
     if (!userJid) return!0
 
-    let pp
+    // IMAGEN FALLBACK DE MARIE
+    const imgFallback = 'https://files.catbox.moe/dsgmid.jpg'
+    let ppBuffer
+
     try {
-      pp = await conn.profilePictureUrl(userJid, 'image')
+      let ppUrl = await conn.profilePictureUrl(userJid, 'image')
+      ppBuffer = (await axios.get(ppUrl, { responseType: 'arraybuffer' })).data
     } catch {
-      pp = 'https://files.catbox.moe/dsgmid.jpg' // URL MARIE FALLBACK
+      // Si no tiene foto, usa la de Marie
+      ppBuffer = (await axios.get(imgFallback, { responseType: 'arraybuffer' })).data
     }
 
     const userTag = `@${userJid.split('@')[0]}`
@@ -67,7 +73,7 @@ handler.before = async function (m, { conn, groupMetadata }) {
 
     if (txt) {
       await conn.sendMessage(m.chat, {
-        image: { url: pp },
+        image: ppBuffer, // ahora siempre manda buffer
         caption: txt,
         mentions: [userJid]
       })
