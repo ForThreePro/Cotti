@@ -3,7 +3,7 @@ import axios from 'axios'
 let handler = async (m, { conn, args }) => {
   let user = m.sender
   let nombre = await conn.getName(user)
-  let imgDefault = 'https://files.evogb.win/ySkXCm.jpg' // tu imagen
+  let imgDefault = 'https://files.evogb.win/ySkXCm.jpg'
 
   const monedas = {
     peru: 'PEN', argentina: 'ARS', mexico: 'MXN',
@@ -17,8 +17,19 @@ let handler = async (m, { conn, args }) => {
     COP: 'Peso Colombiano', BOB: 'Boliviano'
   }
 
+  // Función para obtener foto segura
+  async function getFoto() {
+    try {
+      let pp = await conn.profilePictureUrl(user, 'image')
+      if (typeof pp!== 'string') throw new Error('No string')
+      return pp
+    } catch {
+      return imgDefault
+    }
+  }
+
   if (!args[0]) {
-    let ppUrl = await conn.profilePictureUrl(user, 'image').catch(_ => imgDefault)
+    let ppUrl = await getFoto()
     let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
 
     let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗚𝗢𝗚𝗟𝗘 𓆪 🐱\n\n`
@@ -42,14 +53,14 @@ let handler = async (m, { conn, args }) => {
   let a = args[2]? args[2].toLowerCase() : ''
 
   if (!monedas[de]) return m.reply(`❌ País no válido`)
-  if (!cantidad) return m.reply(`❌ Pon una cantidad válida`)
+  if (isNaN(cantidad)) return m.reply(`❌ Pon una cantidad válida`)
 
   let monedaDe = monedas[de]
 
   try {
     await m.react('⏳')
 
-    let ppUrl = await conn.profilePictureUrl(user, 'image').catch(_ => imgDefault)
+    let ppUrl = await getFoto()
     let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
 
     const urlOficial = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${monedaDe.toLowerCase()}.json`
