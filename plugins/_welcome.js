@@ -1,28 +1,3 @@
-import { WAMessageStubType } from '@whiskeysockets/baileys'
-import axios from 'axios'
-
-const handler = async (m, { conn, args, isAdmin, isOwner }) => {
-  if (!isAdmin &&!isOwner) return conn.reply(m.chat, `🐱 𓆩 ***COTTI BOTS OFICIAL*** 𓆪 🐱\n\n🌸 *Marie dice: Solo admins pueden usar este comando*`, m)
-  let chat = global.db.data.chats[m.chat]
-  if (!chat) global.db.data.chats[m.chat] = {}
-
-  if (/on/i.test(args[0])) {
-    chat.bienvenida = true
-    await conn.reply(m.chat, `💖 𓆩 ***BIENVENIDA*** 𓆪 💖\n\n🟢 *Marie activó bienvenida con audios*`, m)
-  } else if (/off/i.test(args[0])) {
-    chat.bienvenida = false
-    await conn.reply(m.chat, `💖 𓆩 ***BIENVENIDA*** 𓆪 💖\n\n🔴 *Marie desactivó la bienvenida*`, m)
-  } else {
-    await conn.reply(m.chat, `🐱 𓆩 ***COTTI BOTS OFICIAL*** 𓆪 🐱\n\n📌 *Uso:* ${m.prefix}bienvenida on/off\n🌸 *Temática:* Marie`, m)
-  }
-}
-
-handler.help = ['bienvenida <on/off>']
-handler.tags = ['config']
-handler.command = /^(bienvenida|welcome|bye)$/i
-handler.group = true
-handler.admin = true
-
 handler.before = async function (m, { conn, groupMetadata }) {
   try {
     if (!m.messageStubType ||!m.isGroup) return!0
@@ -32,16 +7,14 @@ handler.before = async function (m, { conn, groupMetadata }) {
     const userJid = m.messageStubParameters?.[0] || m.participant
     if (!userJid) return!0
 
-    // IMAGEN FALLBACK DE MARIE
-    const imgFallback = 'https://files.catbox.moe/dsgmid.jpg'
+    // FOTO SIEMPRE OBLIGATORIA - TU IMAGEN
+    const imgFallback = 'https://files.evogb.win/ySkXCm.jpg' // <- AQUI
     let ppBuffer
-
     try {
       let ppUrl = await conn.profilePictureUrl(userJid, 'image')
       ppBuffer = (await axios.get(ppUrl, { responseType: 'arraybuffer' })).data
     } catch {
-      // Si no tiene foto, usa la de Marie
-      ppBuffer = (await axios.get(imgFallback, { responseType: 'arraybuffer' })).data
+      ppBuffer = (await axios.get(imgFallback, { responseType: 'arraybuffer' })).data // <- Y AQUI
     }
 
     const userTag = `@${userJid.split('@')[0]}`
@@ -73,7 +46,7 @@ handler.before = async function (m, { conn, groupMetadata }) {
 
     if (txt) {
       await conn.sendMessage(m.chat, {
-        image: ppBuffer, // ahora siempre manda buffer
+        image: ppBuffer,
         caption: txt,
         mentions: [userJid]
       })
@@ -91,5 +64,3 @@ handler.before = async function (m, { conn, groupMetadata }) {
   }
   return!0
 }
-
-export default handler
