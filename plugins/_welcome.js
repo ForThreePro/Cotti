@@ -1,3 +1,67 @@
+import { WAMessageStubType } from '@whiskeysockets/baileys'
+import axios from 'axios'
+
+let handler = async (m, { conn, args, isAdmin, isOwner, usedPrefix }) => {
+  if (!isAdmin &&!isOwner) return conn.reply(m.chat, `🐱 𓆩 ***COTTI BOTS OFICIAL*** 𓆪 🐱\n\n🌸 *Marie dice: Solo admins pueden usar este comando*`, m)
+
+  let chat = global.db.data.chats[m.chat]
+  if (!chat) global.db.data.chats[m.chat] = {}
+
+  let tipo = args[0]?.toLowerCase()
+
+  if (/on/i.test(tipo)) {
+    chat.bienvenida = true
+    return conn.reply(m.chat, `💖 𓆩 ***BIENVENIDA*** 𓆪 💖\n\n🟢 *Marie activó bienvenida con audios*`, m)
+  }
+  if (/off/i.test(tipo)) {
+    chat.bienvenida = false
+    return conn.reply(m.chat, `💖 𓆩 ***BIENVENIDA*** 𓆪 💖\n\n🔴 *Marie desactivó la bienvenida*`, m)
+  }
+
+  if (/setwelcome/i.test(tipo)) {
+    let text = args.slice(1).join(' ')
+    if (!text) return m.reply(`📌 *Uso:* ${usedPrefix}bienvenida setwelcome @user bienvenido a @group`)
+    chat.customWelcome = text
+    return m.reply(`✅ Mensaje de bienvenida guardado`)
+  }
+  if (/setbye/i.test(tipo)) {
+    let text = args.slice(1).join(' ')
+    if (!text) return m.reply(`📌 *Uso:* ${usedPrefix}bienvenida setbye @user salió de @group`)
+    chat.customBye = text
+    return m.reply(`✅ Mensaje de despedida guardado`)
+  }
+  if (/setkick/i.test(tipo)) {
+    let text = args.slice(1).join(' ')
+    if (!text) return m.reply(`📌 *Uso:* ${usedPrefix}bienvenida setkick @user fue expulsado de @group`)
+    chat.customKick = text
+    return m.reply(`✅ Mensaje de expulsión guardado`)
+  }
+  if (/setaudiowelcome/i.test(tipo)) {
+    if (!m.quoted ||!m.quoted.audio) return m.reply(`📌 Responde a un audio con: ${usedPrefix}bienvenida setaudiowelcome`)
+    chat.audiowelcome = await m.quoted.download()
+    return m.reply(`✅ Audio de bienvenida guardado`)
+  }
+  if (/setaudiobye/i.test(tipo)) {
+    if (!m.quoted ||!m.quoted.audio) return m.reply(`📌 Responde a un audio con: ${usedPrefix}bienvenida setaudiobye`)
+    chat.audiobye = await m.quoted.download()
+    return m.reply(`✅ Audio de despedida guardado`)
+  }
+  if (/setaudiokick/i.test(tipo)) {
+    if (!m.quoted ||!m.quoted.audio) return m.reply(`📌 Responde a un audio con: ${usedPrefix}bienvenida setaudiokick`)
+    chat.audiokick = await m.quoted.download()
+    return m.reply(`✅ Audio de expulsión guardado`)
+  }
+
+  let menu = `🐱 𓆩 ***CONFIG BIENVENIDA*** 𓆪 🐱\n\n╭─💖─ \`\`COTTI BOTS x MARIE\`\` ─💖─╮\n│ Estado: ${chat.bienvenida? '🟢 Activado' : '🔴 Desactivado'}\n╰─✨ Temática: Marie ✨─╯`
+  return conn.reply(m.chat, menu, m)
+}
+
+handler.help = ['bienvenida <on/off/set>']
+handler.tags = ['config']
+handler.command = /^(bienvenida|welcome|bye)$/i
+handler.group = true
+handler.admin = true
+
 handler.before = async function (m, { conn, groupMetadata }) {
   try {
     if (!m.messageStubType ||!m.isGroup) return!0
@@ -7,14 +71,16 @@ handler.before = async function (m, { conn, groupMetadata }) {
     const userJid = m.messageStubParameters?.[0] || m.participant
     if (!userJid) return!0
 
-    // FOTO SIEMPRE OBLIGATORIA - TU IMAGEN
-    const imgFallback = 'https://files.evogb.win/ySkXCm.jpg' // <- AQUI
-    let ppBuffer
+    const imgFallback = 'https://files.evogb.win/ySkXCm.jpg'
+    let imageToSend = null
+
+    // INTENTO 1: Descargar foto del usuario
     try {
       let ppUrl = await conn.profilePictureUrl(userJid, 'image')
-      ppBuffer = (await axios.get(ppUrl, { responseType: 'arraybuffer' })).data
+      imageToSend = { url: ppUrl }
     } catch {
-      ppBuffer = (await axios.get(imgFallback, { responseType: 'arraybuffer' })).data // <- Y AQUI
+      // INTENTO 2: Si falla, usar tu imagen de Marie por URL directo
+      imageToSend = { url: imgFallback }
     }
 
     const userTag = `@${userJid.split('@')[0]}`
@@ -46,7 +112,7 @@ handler.before = async function (m, { conn, groupMetadata }) {
 
     if (txt) {
       await conn.sendMessage(m.chat, {
-        image: ppBuffer,
+        image: imageToSend, // ahora siempre es {url:...}
         caption: txt,
         mentions: [userJid]
       })
@@ -61,6 +127,12 @@ handler.before = async function (m, { conn, groupMetadata }) {
     }
   } catch (e) {
     console.error("Error en Bienvenida Audio:", e)
+    // ULTIMO RECURSO: mandar solo texto si todo falla
+    try {
+      await conn.reply(m.chat, `💖 Nuevo miembro: @${m.messageStubParameters?.[0]?.split('@')[0]}`, m)
+    } catch {}
   }
   return!0
 }
+
+export default handler
