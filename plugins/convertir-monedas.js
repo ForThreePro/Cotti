@@ -22,7 +22,7 @@ let handler = async (m, { conn, args, text }) => {
     PYG: '🇵🇾', COP: '🇨🇴', BOB: '🇧🇴', CLP: '🇨🇱'
   }
 
-  // TASAS BASE GOOGLE QUE ME DISTE
+  // TASAS BASE GOOGLE QUE ME DISTE - TODO VS PEN
   const tasasBase = {
     PEN_CLP: 279.20,
     PEN_MXN: 5.04,
@@ -31,6 +31,16 @@ let handler = async (m, { conn, args, text }) => {
     PEN_UYU: 12.01,
     PEN_BOB: 3.62,
     PEN_COP: 940.06
+  }
+
+  function getTasa(de, a) {
+    if (de === a) return 1
+    if (de === 'PEN') return tasasBase[`PEN_${a}`]
+    if (a === 'PEN') return 1 / tasasBase[`PEN_${de}`]
+    // Si no es PEN, convertimos pasando por PEN
+    let tasaDeaPEN = 1 / tasasBase[`PEN_${de}`]
+    let tasaPENaA = tasasBase[`PEN_${a}`]
+    return tasaDeaPEN * tasaPENaA
   }
 
   async function getFoto() {
@@ -46,12 +56,12 @@ let handler = async (m, { conn, args, text }) => {
     let ppUrl = await getFoto()
     let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
 
-    let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗚𝗢𝗢𝗚𝗟𝗘 𓆪 🐱\n\n`
+    let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗚𝗢𝗚𝗟𝗘 𓆪 🐱\n\n`
     menu += `╭─💖─ \`\`COTTI BOTS x MARIE\`\` ─💖─╮\n`
     menu += `│\n`
     menu += `│ 💚 *USO:*\n`
     menu += `│ ➛ \`.convertir 100 Peru Chile\`\n`
-    menu += `│ ➛ \`.convertir 100 Peru / Argentina\`\n`
+    menu += `│ ➛ \`.convertir 4500 Chile Argentina\`\n`
     menu += `│ ➛ \`.convertir 1 Peru todo\`\n`
     menu += `│\n`
     menu += `│ 🌎 *PAISES:* 🇵🇪 🇦🇷 🇲🇽 🇺🇾 🇵🇾 🇨🇴 🇧🇴 🇨🇱\n`
@@ -99,9 +109,7 @@ let handler = async (m, { conn, args, text }) => {
       for (let mon in monedas) {
         let monCod = monedas[mon]
         if (monCod!== monedaDe) {
-          let key = `${monedaDe}_${monCod}`
-          let keyInversa = `${monCod}_${monedaDe}`
-          let tasa = tasasBase[key] || (1 / tasasBase[keyInversa])
+          let tasa = getTasa(monedaDe, monCod)
           let res = cantidad * tasa
           texto += `│ ${banderas[monCod]} *${res.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monCod}*\n│ ${nombres[monCod]}\n`
         }
@@ -111,14 +119,12 @@ let handler = async (m, { conn, args, text }) => {
       let monedaA = monedas[a]
       if (!monedaA) return m.reply(`❌ País destino no válido`)
 
-      let key = `${monedaDe}_${monedaA}`
-      let keyInversa = `${monedaA}_${monedaDe}`
-      let tasa = tasasBase[key] || (1 / tasasBase[keyInversa])
+      let tasa = getTasa(monedaDe, monedaA)
       let resultado = cantidad * tasa
 
       texto += `│\n│ 🌸 *DE:* ${banderas[monedaDe]} ${cantidad.toLocaleString()} ${monedaDe}\n│ ${nombres[monedaDe]}\n│\n`
       texto += `│ ⬇️ *A:* ${banderas[monedaA]} ${resultado.toLocaleString(undefined,{maximumFractionDigits: 2})} ${monedaA}\n`
-      texto += `│ ${nombres[monedaA]}\n│\n│ 📊 Tasa: 1 ${monedaDe} = ${tasa} ${monedaA}\n`
+      texto += `│ ${nombres[monedaA]}\n│\n│ 📊 Tasa: 1 ${monedaDe} = ${tasa.toFixed(4)} ${monedaA}\n`
     }
 
     texto += `│\n│ ⚠️ *NOTA:* Precio base Google\n`
