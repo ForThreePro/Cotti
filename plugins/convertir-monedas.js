@@ -3,7 +3,7 @@ import axios from 'axios'
 let handler = async (m, { conn, args }) => {
   let user = m.sender
   let nombre = await conn.getName(user)
-  let ppUrl = await conn.profilePictureUrl(user, 'image').catch(_ => 'https://i.imgur.com/8Km9tLL.png')
+  let imgDefault = 'https://files.evogb.win/ySkXCm.jpg' // tu imagen
 
   const monedas = {
     peru: 'PEN', argentina: 'ARS', mexico: 'MXN',
@@ -17,54 +17,46 @@ let handler = async (m, { conn, args }) => {
     COP: 'Peso Colombiano', BOB: 'Boliviano'
   }
 
-  // SI NO PONE NADA, MOSTRAR AYUDA
   if (!args[0]) {
+    let ppUrl = await conn.profilePictureUrl(user, 'image').catch(_ => imgDefault)
+    let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
+
     let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗚𝗢𝗚𝗟𝗘 𓆪 🐱\n\n`
     menu += `.⃟𖥔 ݁. 𖦹˙— \`\`COTTI BOTS x MARIE\`\` —˙𖦹.💖꒷\n\n`
     menu += `──🌸 *¿COMO SE USA?* ╏ 💚\n\n`
     menu += `💚 ➛ *.convertir <cantidad> <de> <a>*\n`
     menu += `💚 ➛ *.convertir <cantidad> <de> todo*\n`
     menu += `💚 ➛ *.convertir <cantidad> <de> blue*\n\n`
-    menu += `──🌸 *EJEMPLOS* ╏ 💚\n\n`
+    menu += `──🌸 *EJEMPLOS* ╏ 💚\n`
     menu += `💚 ➛ *.convertir 100 Peru Argentina*\n`
     menu += `💚 ➛ *.convertir 1 Peru todo*\n`
     menu += `💚 ➛ *.convertir 1 Peru blue*\n\n`
-    menu += `──🌸 *PAISES DISPONIBLES* ╏ 💚\n`
-    menu += `💚 ➛ Peru = PEN - Sol\n`
-    menu += `💚 ➛ Argentina = ARS - Peso Arg\n`
-    menu += `💚 ➛ Mexico = MXN - Peso Mex\n`
-    menu += `💚 ➛ Uruguay = UYU - Peso Uru\n`
-    menu += `💚 ➛ Paraguay = PYG - Guaraní\n`
-    menu += `💚 ➛ Colombia = COP - Peso Col\n`
-    menu += `💚 ➛ Bolivia = BOB - Boliviano\n\n`
-    menu += `*Nota:* Incluye tasa BLUE para Argentina\n`
-    menu += `*Actualizado:* Google API cada hora\n`
+    menu += `──🌸 *PAISES* ╏ 💚\nPeru PEN | Argentina ARS | Mexico MXN\nUruguay UYU | Paraguay PYG | Colombia COP | Bolivia BOB\n`
     menu += `━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
-    return await conn.sendMessage(m.chat, {
-      image: { url: ppUrl },
-      caption: menu
-    }, { quoted: m })
+    return await conn.sendMessage(m.chat, { image: buffer, caption: menu }, { quoted: m })
   }
 
   let cantidad = parseFloat(args[0])
   let de = args[1]? args[1].toLowerCase() : ''
   let a = args[2]? args[2].toLowerCase() : ''
 
-  if (!monedas[de]) return m.reply(`❌ País no válido\nUsa: Peru, Argentina, Mexico, Uruguay, Paraguay, Colombia, Bolivia`)
+  if (!monedas[de]) return m.reply(`❌ País no válido`)
+  if (!cantidad) return m.reply(`❌ Pon una cantidad válida`)
 
   let monedaDe = monedas[de]
 
   try {
     await m.react('⏳')
 
-    // API Oficial Google
+    let ppUrl = await conn.profilePictureUrl(user, 'image').catch(_ => imgDefault)
+    let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
+
     const urlOficial = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${monedaDe.toLowerCase()}.json`
     const { data: dataOficial } = await axios.get(urlOficial)
     let tasas = dataOficial[monedaDe.toLowerCase()]
 
     let texto = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗦𝗜𝗢𝗡 𝗗𝗘 ${nombre.toUpperCase()} 𓆪 🐱\n\n`
-    texto += `.⃟𖥔 ݁. 𖦹˙— \`\`COTTI BOTS x MARIE\`\` —˙𖦹.💖꒷\n\n`
 
     if (a === 'todo') {
       texto += `──🌸 *${cantidad} ${monedaDe} - ${nombres[monedaDe]}* ╏ 💚\n\n`
@@ -83,7 +75,6 @@ let handler = async (m, { conn, args }) => {
         let resBlue = (cantidad * ars_blue).toFixed(2)
         texto += `\n🔵 ➛ ${resBlue} ARS - Peso Arg BLUE\n`
       }
-
     } else if (a === 'blue' && monedaDe === 'PEN') {
       const { data: dolar } = await axios.get('https://dolarapi.com/v1/dolares/blue')
       let usd_a_pen = tasas['usd']
@@ -91,26 +82,18 @@ let handler = async (m, { conn, args }) => {
       let ars_blue = pen_a_usd * dolar.venta
       let resultado = (cantidad * ars_blue).toFixed(2)
       texto += `💚 ➛ *${cantidad} ${monedaDe}* = *${resultado} ARS BLUE*\n`
-      texto += `Tasa Blue: 1 USD = ${dolar.venta} ARS\n`
-
     } else {
       let monedaA = monedas[a]
       if (!monedaA) return m.reply(`❌ País destino no válido`)
       let tasa = tasas[monedaA.toLowerCase()]
       let resultado = (cantidad * tasa).toFixed(2)
       texto += `💚 ➛ *${cantidad} ${monedaDe}* = *${resultado} ${monedaA}*\n`
-      texto += `Tasa Oficial: 1 ${monedaDe} = ${tasa} ${monedaA}\n`
     }
 
     texto += `\n*Actualizado:* ${new Date().toLocaleString('es-PE')}`
-    texto += `\n*Foto de:* ${ppUrl}`
     texto += `\n━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
-    await conn.sendMessage(m.chat, {
-      image: { url: ppUrl },
-      caption: texto
-    }, { quoted: m })
-
+    await conn.sendMessage(m.chat, { image: buffer, caption: texto }, { quoted: m })
     await m.react('✅')
   } catch (e) {
     await m.react('❌')
@@ -118,8 +101,5 @@ let handler = async (m, { conn, args }) => {
   }
 }
 
-handler.help = ['convertir']
-handler.tags = ['tools']
 handler.command = ['convertir', 'conv', 'cambio']
-
 export default handler
