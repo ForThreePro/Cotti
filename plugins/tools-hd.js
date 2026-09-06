@@ -3,9 +3,6 @@ import FormData from 'form-data'
 
 const api = { url: 'https://api.stellarwa.xyz', key: 'proyectsV2' }
 
-// Guardar buffer temporal para el botón
-global.hdDocTemp = global.hdDocTemp || new Map()
-
 function generateUniqueFilename(mime) {
   const ext = mime.split('/')[1] || 'jpg'
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -40,60 +37,36 @@ let handler = async (m, { conn }) => {
       let buffer = await q.download()
       let uploadedUrl = await uploadToUguu(buffer, mime)
 
-      // PASO 1: HACER 2K
-      let hd2k = await upscaleImage(uploadedUrl, 2)
-      await conn.sendMessage(m.chat, {
-        image: hd2k,
-        caption: `✅ Ya lo convertí en *HD 2K*\n\nEstoy procesando a *4K*... espera un momento`
-      }, { quoted: m })
+      // PASO 1: PROCESAR 2K SOLO PARA AVISAR
+      await upscaleImage(uploadedUrl, 2)
+      await m.reply(`✅ Ya lo convertí en *HD 2K*\n\nEstoy procesando a *4K*... espera un momento`)
 
-      // PASO 2: HACER 4K
+      // PASO 2: PROCESAR 4K
       let hd4k = await upscaleImage(uploadedUrl, 4)
 
-      // Guardar el 4k para el botón de documento
-      const key = m.key.id
-      global.hdDocTemp.set(key, { buffer: hd4k, time: Date.now() })
-      setTimeout(() => global.hdDocTemp.delete(key), 600000) // 10 min
-
-      // PASO 3: MANDAR 4K CON BOTON
-      const buttons = [
-        { buttonId: `.gdoc_${key}`, buttonText: { displayText: '📄 Obtener Documento' }, type: 1 }
-      ]
+      // PASO 3: MANDAR 4K EN IMAGEN
       await conn.sendMessage(m.chat, {
         image: hd4k,
-        caption: `✨ *HD 4K LISTO*\n\nCalidad: Ultra HD\nSi quieres descargarlo en buena calidad dale al botón`,
-        footer: 'Bot HD',
-        buttons: buttons,
-        headerType: 4
+        caption: `✨ *HD 4K LISTO*\n\nCalidad: Ultra HD x4\nEnviando documento sin compresión...`
+      }, { quoted: m })
+
+      // PASO 4: MANDAR 4K EN DOCUMENTO AUTOMATICO
+      await conn.sendMessage(m.chat, {
+        document: hd4k,
+        fileName: `hd-4k.png`,
+        mimetype: 'image/png',
+        caption: `Documento HD 4K - Sin compresión`
       }, { quoted: m })
 
       await m.react('✅')
 
     } catch (err) {
       await m.react('❌')
-      await m.reply(`Error: ${err.message || err}`)
+      await m.reply(`Error: ${err.message || err}\n\nNota: 4K pesa mucho. Si falla intenta con una imagen mas pequeña`)
     }
 }
 
-// HANDLER PARA EL BOTON DE DOCUMENTO
-handler.before = async (m, { conn }) => {
-  if (!m.text?.startsWith('.gdoc_')) return
-  let key = m.text.split('_')[1]
-  const data = global.hdDocTemp.get(key)
-  if (!data) return m.reply(`❌ El archivo expiró. Usa.hd de nuevo`)
-
-  await m.react('📄')
-  await conn.sendMessage(m.chat, {
-    document: data.buffer,
-    fileName: `hd-4k.png`,
-    mimetype: 'image/png',
-    caption: `Documento HD 4K`
-  }, { quoted: m })
-  await m.react('✅')
-  global.hdDocTemp.delete(key)
-}
-
-handler.help = ['hd - Convierte a 2K y luego a 4K automaticamente']
+handler.help = ['hd - Convierte imagen a 4K y envía imagen + documento automático']
 handler.tags = ['tools', 'ai']
 handler.command = /^(hd)$/i
 export default handler
