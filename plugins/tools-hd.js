@@ -6,9 +6,6 @@ const api = {
     key: 'proyectsV2'
 }
 
-// Guardar la imagen temporal por 5 min
-global.hdTemp = global.hdTemp || new Map()
-
 function generateUniqueFilename(mime) {
   const ext = mime.split('/')[1] || 'jpg'
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -35,78 +32,52 @@ async function upscaleImage(url, scale = 2) {
   return Buffer.from(res.data)
 }
 
-// COMANDO PRINCIPAL: SOLO MUESTRA BOTONES
-let handler = async (m, { conn }) => {
+let handler = async (m, { conn, command }) => {
     const q = m.quoted || m
     const mime = (q.msg || q).mimetype || ''
 
-    if (!mime) return m.reply(`Responde a una imagen con:.hd`)
+    if (!mime) return m.reply(`Responde a una imagen con:\n*.hd* para 2K\n*.hdf* para 4K`)
     if (!/image\/(jpe?g|png)/.test(mime)) {
       return m.reply(`Solo se acepta imagen JPG/PNG`)
     }
 
-    await m.react('📸')
-    const buffer = await q.download()
+    // Detectar comando
+    let scale = command === 'hdf'? 4 : 2
+    let quality = scale === 4? '4K' : '2K'
 
-    // Guardamos la imagen con el ID del mensaje
-    const key = m.key.id
-    global.hdTemp.set(key, { buffer, mime, time: Date.now() })
+    try {
+      await m.react('⏳')
 
-    // Borrar de la memoria en 5 min
-    setTimeout(() => global.hdTemp.delete(key), 300000)
+      const buffer = await q.download()
+      const uploadedUrl = await uploadToUguu(buffer, mime)
+      const hdBuffer = await upscaleImage(uploadedUrl, scale)
 
-    const buttons = [
-      { buttonId: `.hd2_${key}`, buttonText: { displayText: '✨ Obtener 2K' }, type: 1 },
-      { buttonId: `.hd4_${key}`, buttonText: { displayText: '🚀 Obtener 4K' }, type: 1 }
-    ]
+      // Enviar imagen HD
+      await conn.sendMessage(m.chat, {
+        image: hdBuffer,
+        caption: `*Resultado HD ${quality}*\nMejora x${scale}\nKey: proyectsV2`
+      }, { quoted: m })
 
-    await conn.sendMessage(m.chat, {
-      image: buffer,
-      caption: `*MEJORA DE CALIDAD HD*\n\nElige la calidad que quieres:\n*2K*: Mejora x2. Rápido\n*4K*: Mejora x4. Tarda más`,
-      footer: 'Bot HD by Stellar',
-      buttons: buttons,
-      headerType: 4
-    }, { quoted: m })
+      // Enviar también como documento
+      await conn.sendMessage(m.chat, {
+        document: hdBuffer,
+        fileName: `hd-${quality}.png`,
+        mimetype: 'image/png',
+        caption: `Documento HD ${quality}`
+      }, { quoted: m })
+
+      await m.react('✅')
+
+    } catch (err) {
+      await m.react('❌')
+      await m.reply(`Error: ${err.message || err}\n\nNota: 4K tarda mas y pesa mas. Si falla usa 2K`)
+    }
 }
 
-// HANDLER PARA LOS BOTONES
-handler.before = async (m, { conn }) => {
-  if (!m.text) return
-  if (!m.text.startsWith('.hd2_') &&!m.text.startsWith('.hd4_')) return
-
-  let [cmd, key] = m.text.split('_')
-  let scale = cmd === '.hd2'? 2 : 4
-
-  const data = global.hdTemp.get(key)
-  if (!data) return m.reply(`❌ La imagen expiró. Vuelve a usar.hd`)
-
-  try {
-    await m.react('⏳')
-    const uploadedUrl = await uploadToUguu(data.buffer, data.mime)
-    const hdBuffer = await upscaleImage(uploadedUrl, scale)
-
-    await conn.sendMessage(m.chat, {
-      image: hdBuffer,
-      caption: `*Resultado HD ${scale}x*\nKey: proyectsV2`
-    }, { quoted: m })
-
-    await conn.sendMessage(m.chat, {
-      document: hdBuffer,
-      fileName: `hd-${scale}x.png`,
-      mimetype: 'image/png',
-      caption: `Documento HD ${scale}x`
-    }, { quoted: m })
-
-    await m.react('✅')
-    global.hdTemp.delete(key) // borrar después de usar
-
-  } catch (err) {
-    await m.react('❌')
-    await m.reply(`Error: ${err.message || err}`)
-  }
-}
-
-handler.help = ['hd']
+handler.help = [
+  'hd - Mejora imagen a 2K/Full HD',
+  'hdf - Mejora imagen a 4K/Ultra HD'
+]
 handler.tags = ['tools', 'ai']
-handler.command = /^(hd)$/i
+handler.command = /^(hd|hdf)$/i
 export default handler
