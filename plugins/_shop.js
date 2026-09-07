@@ -111,7 +111,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
 }
 
 handler.help = ['setcombos','combos','delcombos','setpago','pago','delpago','setstock','stock','delstock']
-handler.tags = ['Shop']
+handler.tags = ['shop']
 handler.command = /^(setcombos|combos|delcombos|setpago|pago|delpago|setstock|stock|delstock)$/i
 handler.group = true
 
