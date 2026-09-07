@@ -140,7 +140,7 @@ handler.help = [
     'suplente <numSala> @user',
     'salir <numSala> @user'
 ]
-handler.tags = ['vs', 'freefire', 'grupo']
+handler.tags = ['freefire']
 handler.command = /^(v[46](fem|masc|mixto)|anotar|suplente|salir)$/i
 handler.group = true
 handler.admin = true // solo admin puede crear y anotar
