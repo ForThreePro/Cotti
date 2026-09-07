@@ -2,11 +2,10 @@ import os from 'os'
 import { performance } from 'perf_hooks'
 
 let handler = async (m, { conn, usedPrefix }) => {
-  let loadMsg = await conn.reply(m.chat, `🐱 𓆩 𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢 𝗠𝗘𝗡𝗨 𓆪 🐱\n\n⏳ *Espere un momento...*\n> Cargando sistema COTTI BOTS...`, m)
+  let loadMsg = await conn.reply(m.chat, `🌸 𓆩 𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢 𝗠𝗘𝗡𝗨 𓆪 🌸\n\n💕 *Marie dice: Espere un momentito...*\n> Cargando magia de COTTI BOTS...`, m)
 
   let taguser = m.mentionedJid && m.mentionedJid[0]? m.mentionedJid[0] : m.quoted? m.quoted.sender : m.sender
 
-  // Solo 1 foto
   let img = { url: 'https://files.evogb.win/ySkXCm.jpg' }
 
   let uptime = process.uptime() * 1000
@@ -30,14 +29,15 @@ let handler = async (m, { conn, usedPrefix }) => {
     else groups[category].push(plugin.help)
   }
 
+  // ICONOS FEMENINOS
   const icons = {
     search: '🔍', download: '⬇️', game: '🎮', rpg: '⚔️', config: '⚙️',
     group: '👥', owner: '👑', info: 'ℹ️', fun: '😂', anime: '🌸',
     sticker: '🧩', tools: '🛠️', nsfw: '🔞', audio: '🎵', prem: '💖',
-    shop: '🛒', edit: '🎨', otros: '📁'
+    shop: '🛒', edit: '🎨', database: '💾', main: '🏠', otros: '📁'
   }
 
-  // NOMBRES BONITOS DE CADA CATEGORIA
+  // NOMBRES BONITOS - SI AGREGAS UNA CATEGORIA NUEVA SE PONE SOLA EN MAYUSCULAS
   const categoryNames = {
     search: 'BUSQUEDA',
     download: 'DESCARGAS',
@@ -56,45 +56,47 @@ let handler = async (m, { conn, usedPrefix }) => {
     prem: 'PREMIUM',
     shop: 'TIENDA',
     edit: 'EDICION',
+    database: 'BASE DE DATOS',
+    main: 'PRINCIPAL',
     otros: 'OTROS'
   }
 
-  let menu = `🐱 𓆩 ***COTTI BOTS x Marie*** 𓆪 🐱\n\n`
-  menu += `⤷ ┇ 𝐕𝐄𝐑𝐒𝐈𝐎𝐍 ﹒ 3.0 ：✿ 。\n` // <- QUITE EL PREM
-  menu += `꒰ ◞⁺⊹ ．estado: *EN LINEA* • ${_uptime}\n\n`
-  menu += ` ꒱ ׁ. ᘏ 𝗨𝗦𝗨𝗔𝗥𝗜𝗢 𝗔𝗖𝗧𝗜𝗩𝗢 ׅ 𝆬 ָ֢ ෆ\n`
-  menu += `🐱 ࣪ ꕀ @${taguser.split('@')[0]}. ˚. ᵎᵎ\n`
-  menu += `> *Bienvenido al sistema de Marie*\n\n`
-  menu += `──🌸 *INFORMACION DEL BOT* ╏ 💚\n`
-  menu += `*Usuarios*: ${totalreg} | *Comandos*: ${totalcmd}\n`
-  menu += `*Owner*: ${ownerTag}\n`
-  menu += `*Numero*: +${numBot}\n\n`
-  menu += ` ׅ 💖 : 𝖲𝖨𝖲𝖳𝖤𝖬𝖠 ﹙ 🌸 ﹚\n`
-  menu += `> ﹒ RAM: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}mb / ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)}gb\n`
-  menu += ` ᶻz　*${new Date().toLocaleDateString('es', {weekday: 'long', timeZone: 'America/Lima'})}* ─ ${new Date().toLocaleDateString('es', {timeZone: 'America/Lima'})} ─ ${new Date().toLocaleTimeString('es', {timeZone: 'America/Lima'})}　⋌\n\n`
-  menu += `© ❛ *ping*. ${ping}ms\n`
-  menu += `名 ─ *modo:* public﹔\n\n`
-  menu += `> ❍ 𝖴𝗌𝖺 ${usedPrefix} 𝖺𝗇𝗍𝖾𝗌 𝖽𝖾 𝖼𝖺𝖽𝖺 𝖼𝗈𝗆𝖺𝗇𝖽𝗈\n`
+  let menu = `🌸 𓆩 ***COTTI BOTS x Marie*** 𓆪 🌸\n\n`
+  menu += `💕 ⤷ 𝐕𝐄𝐑𝐒𝐈𝐎𝐍 ﹒ 3.0 ：✿ 。\n`
+  menu += `✨ ꒰ estado: *EN LINEA* • ${_uptime} ꒱\n\n`
+  menu += `🌷 𝗨𝗦𝗨𝗔𝗥𝗜𝗢 𝗩𝗜𝗣 ׅ 𝆬 ָ֢ ෆ\n`
+  menu += `🌸 ࣪ ꕀ @${taguser.split('@')[0]}. ˚. ᵎᵎ\n`
+  menu += `> *Hola preciosa, bienvenida al sistema* 💖\n\n`
+  menu += `──💗 *INFORMACION DEL BOT* ╏ ✨\n`
+  menu += `👤 *Usuarios*: ${totalreg} | 📜 *Comandos*: ${totalcmd}\n`
+  menu += `👑 *Owner*: ${ownerTag}\n`
+  menu += `📲 *Numero*: +${numBot}\n\n`
+  menu += `💖 : 𝖲𝖨𝖲𝖳𝖤𝖬𝖠 ﹙ 🌸 ﹚\n`
+  menu += `> 💾 RAM: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}mb / ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)}gb\n`
+  menu += `🗓️ *${new Date().toLocaleDateString('es', {weekday: 'long', timeZone: 'America/Lima'})}* ─ ${new Date().toLocaleDateString('es', {timeZone: 'America/Lima'})} ─ ${new Date().toLocaleTimeString('es', {timeZone: 'America/Lima'})}\n\n`
+  menu += `⚡ *ping*: ${ping}ms\n`
+  menu += `🌙 *modo:* public\n`
+  menu += `> 💕 𝖴𝗌𝖺 ${usedPrefix} 𝖺𝗇𝗍𝖾𝗌 𝖽𝖾 𝖼𝖺𝖽𝖺 𝖼𝗈𝗆𝖺𝗇𝖽𝗈\n`
 
-  // AQUI CAMBIA: AHORA MUESTRA EL NOMBRE REAL DE LA CATEGORIA
+  // DETECTA CATEGORIAS NUEVAS AUTOMATICO
   for (let category in groups) {
-    let icon = icons[category] || '📁'
-    let catName = categoryNames[category] || category.toUpperCase()
-    menu += `.⃟𖥔 ݁. 𖦹˙— \`\`${catName}\`\` —˙𖦹.${icon}꒷\n` // <- AQUI SALE EL NOMBRE REAL
+    let icon = icons[category] || '🌸'
+    let catName = categoryNames[category] || category.toUpperCase() // Si no existe el nombre, lo pone en MAYUS
+    menu += `🌸───── 𓆩 \`\`${catName}\`\` 𓆪 ─────🌸\n`
     for (let cmd of groups[category]) {
-      menu += `${icon} ➛.${cmd}\n`
+      menu += `${icon} ✧ ${usedPrefix}${cmd}\n`
     }
-    menu += ` ㅤ└──.✦ ── ⊰ ̟!!.✦. ˙\n\n`
+    menu += `🌸─────────────────🌸\n\n`
   }
 
-  menu += `━━━━━━━━━━━\n`
-  menu += `🐱 ***COTTI BOTS x Marie*** 🐱\n`
-  menu += `*Owner*: ${ownerTag}\n`
-  menu += `*Contacto*: +${numBot}\n`
-  menu += `*Version*: 3.0\n` // <- QUITE EL PREM
-  menu += `*Power*: Nivel Marie\n`
-  menu += `> "Siempre lista para ayudarte con una sonrisa" 💖\n`
-  menu += `━━━━━━━━━━━`
+  menu += `━━━━━━━━━━\n`
+  menu += `🌸 ***COTTI BOTS x Marie*** 🌸\n`
+  menu += `👑 *Owner*: ${ownerTag}\n`
+  menu += `📲 *Contacto*: +${numBot}\n`
+  menu += `✨ *Version*: 3.0\n`
+  menu += `💖 *Power*: Nivel Marie\n`
+  menu += `> "Con una sonrisa todo es mejor" 💕\n`
+  menu += `━━━━━━━━━━`
 
   await conn.sendMessage(m.chat, {
     image: img,
