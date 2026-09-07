@@ -67,6 +67,6 @@ let handler = async (m, { conn }) => {
 }
 
 handler.help = ['hd - Convierte imagen a 4K y envía imagen + documento automático']
-handler.tags = ['tools', 'ai']
+handler.tags = ['tools']
 handler.command = /^(hd)$/i
 export default handler
