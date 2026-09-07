@@ -13,13 +13,13 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
     let data = cmds[chat]
 
     const guardar = () => fs.writeFileSync(db, JSON.stringify(cmds, null, 2))
+    let texto = args.slice(1).join(' ') // todo lo que va despues del nombre
 
-    // ========== SET DINAMICO ==========
-    if (command.startsWith('set')) {
-        let nombre = command.replace('set', '').toLowerCase()
-        if (!nombre) return m.reply(`📌 *USO:* ${usedPrefix}setnombre texto o imagen`)
+    // ========== SET ==========
+    if (command === 'set') {
+        let nombre = args[0]?.toLowerCase()
+        if (!nombre) return m.reply(`📌 *USO:* ${usedPrefix}set nombre | texto o imagen`)
 
-        let texto = args.join(' ')
         let q = m.quoted
         let img = q?.mimetype?.includes('image')? await q.download() : m.mimetype?.includes('image')? await m.download() : null
 
@@ -32,10 +32,10 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
         m.reply(`✅ *COMANDO.${nombre} CREADO*\n\nAhora usa:.${nombre}`)
     }
 
-    // ========== DEL DINAMICO ==========
-    else if (command.startsWith('del')) {
-        let nombre = command.replace('del', '').toLowerCase()
-        if (!nombre) return m.reply(`📌 *USO:* ${usedPrefix}delnombre`)
+    // ========== DEL ==========
+    else if (command === 'del') {
+        let nombre = args[0]?.toLowerCase()
+        if (!nombre) return m.reply(`📌 *USO:* ${usedPrefix}del nombre`)
         if (!data[nombre]) return m.reply('❌ Ese comando no existe')
 
         delete data[nombre]
@@ -72,6 +72,5 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
 
 handler.help = ['set','del','menucmd']
 handler.tags = ['cmd']
-handler.command = /^(set\w+|del\w+|menucmd|\w+)$/i
+handler.command = /^(set|del|menucmd|\w+)$/i
 handler.group = true
-// Sin handler.admin = true
