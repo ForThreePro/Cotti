@@ -74,4 +74,4 @@ handler.help = ['set','del','menucmd']
 handler.tags = ['cmd']
 handler.command = /^(set\w+|del\w+|menucmd|\w+)$/i
 handler.group = true
-handler.admin = true // <- TODO BLOQUEADO PARA ADMINS
+// Sin handler.admin = true
