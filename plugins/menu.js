@@ -2,10 +2,9 @@ import os from 'os'
 import { performance } from 'perf_hooks'
 
 let handler = async (m, { conn, usedPrefix }) => {
-  let loadMsg = await conn.reply(m.chat, `🌸 𓆩 𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢 𝗠𝗘𝗡𝗨 𓆪 🌸\n\n💕 *Marie dice: Espere un momentito...*\n> Cargando magia de COTTI BOTS...`, m)
+  await conn.reply(m.chat, `🌸 𓆩 𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢 𝗠𝗘𝗡𝗨 𓆪 🌸\n\n💕 *Marie dice: Espere un momentito...*`, m)
 
   let taguser = m.mentionedJid && m.mentionedJid[0]? m.mentionedJid[0] : m.quoted? m.quoted.sender : m.sender
-
   let img = { url: 'https://files.evogb.win/ySkXCm.jpg' }
 
   let uptime = process.uptime() * 1000
@@ -13,8 +12,8 @@ let handler = async (m, { conn, usedPrefix }) => {
   let totalreg = Object.keys(global.db.data.users).length
   let totalcmd = Object.values(global.plugins).filter(p => p.help &&!p.disabled).length
   let start = performance.now()
-  let end = performance.now()
-  let ping = (end - start).toFixed(2)
+  performance.now()
+  let ping = (performance.now() - start).toFixed(2)
 
   let owner = '56931300864'
   let ownerTag = `@${owner}`
@@ -22,43 +21,38 @@ let handler = async (m, { conn, usedPrefix }) => {
 
   let help = Object.values(global.plugins).filter(p => p.help &&!p.disabled)
   let groups = {}
+
+  // DETECCION AUTOMATICA DE CATEGORIAS
   for (let plugin of help) {
-    let category = plugin.tags? plugin.tags[0] : 'otros'
-    if (!groups[category]) groups[category] = []
-    if (Array.isArray(plugin.help)) groups[category].push(...plugin.help)
-    else groups[category].push(plugin.help)
+    if (plugin.disabled) continue
+    let tags = plugin.tags
+    if (!tags) tags = ['otros']
+    if (typeof tags === 'string') tags = [tags]
+
+    for (let tag of tags) {
+      if (!(tag in groups)) groups[tag] = []
+      if (Array.isArray(plugin.help)) groups[tag].push(...plugin.help)
+      else groups[tag].push(plugin.help)
+    }
   }
 
-  // ICONOS FEMENINOS
+  // EMOJIS DIFERENTES POR CATEGORIA
   const icons = {
     search: '🔍', download: '⬇️', game: '🎮', rpg: '⚔️', config: '⚙️',
-    group: '👥', owner: '👑', info: 'ℹ️', fun: '😂', anime: '🌸',
-    sticker: '🧩', tools: '🛠️', nsfw: '🔞', audio: '🎵', prem: '💖',
-    shop: '🛒', edit: '🎨', database: '💾', main: '🏠', otros: '📁'
+    group: '👥', owner: '👑', info: 'ℹ️', fun: '🎭', anime: '🌸',
+    sticker: '🧩', tools: '🔧', nsfw: '🔞', audio: '🎵',
+    shop: '🛒', edit: '✨', database: '💾', main: '🏠',
+    xp: '⭐', bank: '💰', maker: '🎨', otros: '📁'
   }
 
-  // NOMBRES BONITOS - SI AGREGAS UNA CATEGORIA NUEVA SE PONE SOLA EN MAYUSCULAS
+  // NOMBRES BONITOS - SI NO EXISTE LO CREA SOLO
   const categoryNames = {
-    search: 'BUSQUEDA',
-    download: 'DESCARGAS',
-    game: 'JUEGOS',
-    rpg: 'RPG',
-    config: 'CONFIGURACION',
-    group: 'GRUPOS',
-    owner: 'PROPIETARIO',
-    info: 'INFORMACION',
-    fun: 'DIVERSION',
-    anime: 'ANIME',
-    sticker: 'STICKERS',
-    tools: 'HERRAMIENTAS',
-    nsfw: 'NSFW',
-    audio: 'AUDIO',
-    prem: 'PREMIUM',
-    shop: 'TIENDA',
-    edit: 'EDICION',
-    database: 'BASE DE DATOS',
-    main: 'PRINCIPAL',
-    otros: 'OTROS'
+    search: 'BUSQUEDA', download: 'DESCARGAS', game: 'JUEGOS', rpg: 'RPG',
+    config: 'CONFIGURACION', group: 'GRUPOS', owner: 'PROPIETARIO',
+    info: 'INFORMACION', fun: 'DIVERSION', anime: 'ANIME', sticker: 'STICKERS',
+    tools: 'HERRAMIENTAS', nsfw: 'NSFW', audio: 'AUDIO', shop: 'TIENDA',
+    edit: 'EDICION', database: 'BASE DE DATOS', main: 'PRINCIPAL',
+    xp: 'NIVELES', bank: 'ECONOMIA', maker: 'CREADOR'
   }
 
   let menu = `🌸 𓆩 ***COTTI BOTS x Marie*** 𓆪 🌸\n\n`
@@ -76,14 +70,17 @@ let handler = async (m, { conn, usedPrefix }) => {
   menu += `🗓️ *${new Date().toLocaleDateString('es', {weekday: 'long', timeZone: 'America/Lima'})}* ─ ${new Date().toLocaleDateString('es', {timeZone: 'America/Lima'})} ─ ${new Date().toLocaleTimeString('es', {timeZone: 'America/Lima'})}\n\n`
   menu += `⚡ *ping*: ${ping}ms\n`
   menu += `🌙 *modo:* public\n`
-  menu += `> 💕 𝖴𝗌𝖺 ${usedPrefix} 𝖺𝗇𝗍𝖾𝗌 𝖽𝖾 𝖼𝖺𝖽𝖺 𝖼𝗈𝗆𝖺𝗇𝖽𝗈\n`
+  menu += `> 💕 𝖴𝗌𝖺 ${usedPrefix} 𝖺𝗇𝗍𝖾𝗌 𝖽𝖾 𝖼𝖺𝖽𝖺 𝖼𝗈𝗆𝖺𝗇𝖽𝗈\n\n`
 
-  // DETECTA CATEGORIAS NUEVAS AUTOMATICO
-  for (let category in groups) {
-    let icon = icons[category] || '🌸'
-    let catName = categoryNames[category] || category.toUpperCase() // Si no existe el nombre, lo pone en MAYUS
-    menu += `🌸───── 𓆩 \`\`${catName}\`\` 𓆪 ─────🌸\n`
-    for (let cmd of groups[category]) {
+  // AQUI DETECTA CATEGORIAS NUEVAS Y LE PONE EMOJI DIFERENTE
+  const sortedTags = Object.keys(groups).sort()
+  for (let tag of sortedTags) {
+    let icon = icons[tag] || '🌟' // Si no tiene emoji, le pone estrella
+    let name = categoryNames[tag] || tag.charAt(0).toUpperCase() + tag.slice(1) // Si no tiene nombre, lo capitaliza
+
+    menu += `🌸───── 𓆩 \`\`${name}\`\` 𓆪 ─────🌸\n`
+    let cmds = [...new Set(groups[tag])].sort() // Quita duplicados y ordena
+    for (let cmd of cmds) {
       menu += `${icon} ✧ ${usedPrefix}${cmd}\n`
     }
     menu += `🌸─────────────────🌸\n\n`
@@ -112,8 +109,8 @@ handler.command = /^(menu|help|menú)$/i
 export default handler
 
 function clockString(ms) {
-  let h = isNaN(ms)? '--' : Math.floor(ms / 3600000)
-  let m = isNaN(ms)? '--' : Math.floor(ms / 60000) % 60
-  let s = isNaN(ms)? '--' : Math.floor(ms / 1000) % 60
-  return [h, m, s].map(v => v.toString().padStart(2, 0)).join('h ') + 'm'
+  let h = Math.floor(ms / 3600000)
+  let m = Math.floor(ms / 60000) % 60
+  let s = Math.floor(ms / 1000) % 60
+  return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':')
 }
