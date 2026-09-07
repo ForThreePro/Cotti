@@ -17,7 +17,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
     // ========== SET ==========
     if (command === 'set') {
         let nombre = args[0]?.toLowerCase()
-        if (!nombre) return m.reply(`📌 *USO:* ${usedPrefix}set nombre | texto\n*EJ:* ${usedPrefix}set bots Hola soy el bot`)
+        if (!nombre) return m.reply(`📌 *USO:* ${usedPrefix}set nombre texto\n*EJ:* ${usedPrefix}set bots hola bots a 20`)
 
         let texto = args.slice(1).join(' ')
         let q = m.quoted
@@ -28,7 +28,6 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
             imagen: img? img.toString('base64') : null
         }
         guardar()
-
         return m.reply(`✅ *COMANDO.${nombre} CREADO*\n\nAhora usa:.${nombre}`)
     }
 
@@ -53,11 +52,9 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
         return m.reply(txt)
     }
 
-    // ========== USAR COMANDO ==========
+    // ========== USAR COMANDO DINAMICO ==========
     if (data[command]) {
         let cmdData = data[command]
-        if (!cmdData.texto &&!cmdData.imagen) return m.reply(`❌.${command} está vacío`)
-
         if (cmdData.imagen) {
             let buffer = Buffer.from(cmdData.imagen, 'base64')
             await conn.sendMessage(chat, { image: buffer, caption: cmdData.texto }, { quoted: m })
@@ -70,6 +67,6 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
 
 handler.help = ['set', 'del', 'menucmd']
 handler.tags = ['cmd']
-handler.command = ['set','del','menucmd'] // <- ESTO ERA EL ERROR
+handler.command = /^(set|del|menucmd|\w+)$/i // <- AQUI ESTABA EL BUG. AHORA ESCUCHA TODO
 handler.group = true
 export default handler
