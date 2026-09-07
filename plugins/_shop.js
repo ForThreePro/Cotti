@@ -25,6 +25,12 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
             m.reply(`✅ *COMBOS ACTUALIZADOS*\n\n${textoCombo}`)
         break
 
+        case 'delcombos':
+            data.combos = "" // <- BORRA TODO
+            guardar()
+            m.reply(`✅ *Todos los combos fueron eliminados*`)
+        break
+
         // ========== PAGOS ==========
         case 'setpago':
         case 'setpagos': // <- alias por si escriben con s
@@ -35,6 +41,13 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
             m.reply(`✅ *MÉTODOS DE PAGO ACTUALIZADOS*\n\n${textoPago}`)
         break
 
+        case 'delpago':
+        case 'delpagos': // <- alias
+            data.pago = "" // <- BORRA TODO
+            guardar()
+            m.reply(`✅ *Todos los métodos de pago fueron eliminados*`)
+        break
+
         // ========== STOCK ==========
         case 'setstock':
             let textoStock = args.join(' ')
@@ -43,12 +56,18 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
             guardar()
             m.reply(`✅ *STOCK ACTUALIZADO*\n\n${textoStock}`)
         break
+
+        case 'delstock':
+            data.stock = "" // <- BORRA TODO
+            guardar()
+            m.reply(`✅ *Todo el stock fue eliminado*`)
+        break
     }
 }
 
-handler.help = ['setcombos','setpago','setstock']
+handler.help = ['setcombos','delcombos','setpago','setpagos','delpago','delpagos','setstock','delstock']
 handler.tags = ['shop']
-handler.command = /^(setcombos|setpago|setpagos|setstock)$/i
+handler.command = /^(setcombos|delcombos|setpago|setpagos|delpago|delpagos|setstock|delstock)$/i
 handler.admin = true // <- SOLO ADMINS
 handler.group = true
 
