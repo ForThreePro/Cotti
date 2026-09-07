@@ -6,49 +6,40 @@ if (!fs.existsSync(db)) fs.writeFileSync(db, '{}')
 
 let handler = async (m, { conn, command, usedPrefix }) => {
     let shop = JSON.parse(fs.readFileSync(db))
-    let chat = m.chat
+    let chat = m.chat // <- AQUI DETECTA EL GRUPO
 
-    if (!shop[chat]) shop[chat] = {combos:{}, pago:{}, stock:{}}
+    // Si el grupo no existe, lo crea. Cada grupo separado
+    if (!shop[chat]) shop[chat] = {combos:"", pago:"", stock:""}
     let data = shop[chat]
 
     switch(command) {
         // ========== VER COMBOS ==========
         case 'combos':
-            if (Object.keys(data.combos).length == 0) return m.reply('❌ No hay combos registrados aún')
-            let txtC = `🧰 *LISTA DE COMBOS DISPONIBLES* 🧰\n\n`
-            for (let [k,v] of Object.entries(data.combos)) {
-                txtC += `💎 *${k.toUpperCase()}*\n💰 Precio: S/ ${v.precio}\n📝 ${v.desc}\n\n`
-            }
-            txtC += `*Para comprar:* Escribe ${usedPrefix}pagos para ver métodos`
-            m.reply(txtC)
+        case 'c':
+            if (!data.combos) return m.reply('❌ No hay combos registrados aún')
+            m.reply(`🧰 *LISTA DE COMBOS DISPONIBLES* 🧰\n\n${data.combos}\n\n*Para comprar:* Escribe ${usedPrefix}pagos`)
         break
 
         // ========== VER PAGOS ==========
+        case 'pago':
         case 'pagos':
-            if (Object.keys(data.pago).length == 0) return m.reply('❌ No hay métodos de pago registrados')
-            let txtP = `💳 *MÉTODOS DE PAGO ACEPTADOS* 💳\n\n`
-            for (let [k,v] of Object.entries(data.pago)) {
-                txtP += `💎 *${k.toUpperCase()}*\n📲 ${v}\n\n`
-            }
-            txtP += `_Realiza el pago y envía tu comprobante al admin_`
-            m.reply(txtP)
+        case 'p':
+            if (!data.pago) return m.reply('❌ No hay métodos de pago registrados')
+            m.reply(`💳 *MÉTODOS DE PAGO ACEPTADOS* 💳\n\n${data.pago}\n\n_Realiza el pago y envía tu comprobante al admin_`)
         break
 
         // ========== VER STOCK ==========
         case 'stock':
-            if (Object.keys(data.stock).length == 0) return m.reply('❌ No hay stock registrado')
-            let txtS = `📦 *STOCK DISPONIBLE* 📦\n\n`
-            for (let [k,v] of Object.entries(data.stock)) {
-                txtS += `💎 *${k.toUpperCase()}*\n📊 Cantidad: ${v}\n\n`
-            }
-            m.reply(txtS)
+        case 's':
+            if (!data.stock) return m.reply('❌ No hay stock registrado')
+            m.reply(`📦 *STOCK DISPONIBLE* 📦\n\n${data.stock}`)
         break
     }
 }
 
-handler.help = ['combos','pagos','stock']
-handler.tags = ['shop'] // <- Para que salga en.menu
-handler.command = /^(combos|pagos|stock)$/i
+handler.help = ['combos','pago','stock']
+handler.tags = ['shop']
+handler.command = /^(combos|c|pago|pagos|p|stock|s)$/i
 handler.group = true // <- LIBRE PARA TODOS
 
 export default handler
