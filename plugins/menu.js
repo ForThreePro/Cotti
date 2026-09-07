@@ -2,7 +2,7 @@ import os from 'os'
 import { performance } from 'perf_hooks'
 
 let handler = async (m, { conn, usedPrefix }) => {
-  let loadMsg = await conn.reply(m.chat, `🐱 𓆩 𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢 𝗠𝗘𝗡𝗨 𓆪 🐱\n\n⏳ *Marie dice: Espere un momento...*\n> Cargando sistema COTTI BOTS...`, m)
+  let loadMsg = await conn.reply(m.chat, `🐱 𓆩 𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢 𝗠𝗘𝗡𝗨 𓆪 🐱\n\n⏳ *Espere un momento...*\n> Cargando sistema COTTI BOTS...`, m)
 
   let taguser = m.mentionedJid && m.mentionedJid[0]? m.mentionedJid[0] : m.quoted? m.quoted.sender : m.sender
 
@@ -33,18 +33,34 @@ let handler = async (m, { conn, usedPrefix }) => {
   const icons = {
     search: '🔍', download: '⬇️', game: '🎮', rpg: '⚔️', config: '⚙️',
     group: '👥', owner: '👑', info: 'ℹ️', fun: '😂', anime: '🌸',
-    sticker: '🧩', tools: '🛠️', nsfw: '🔞', audio: '🎵', prem: '💖', otros: '📁'
+    sticker: '🧩', tools: '🛠️', nsfw: '🔞', audio: '🎵', prem: '💖',
+    shop: '🛒', edit: '🎨', otros: '📁'
   }
 
+  // NOMBRES BONITOS DE CADA CATEGORIA
   const categoryNames = {
-    search: 'BUSQUEDA', download: 'DESCARGAS', game: 'JUEGOS', rpg: 'RPG',
-    config: 'CONFIG', group: 'GRUPOS', owner: 'OWNER', info: 'INFO',
-    fun: 'DIVERSION', anime: 'ANIME', sticker: 'STICKERS', tools: 'HERRAMIENTAS',
-    nsfw: 'NSFW', audio: 'AUDIO', prem: 'PREM', otros: 'OTROS'
+    search: 'BUSQUEDA',
+    download: 'DESCARGAS',
+    game: 'JUEGOS',
+    rpg: 'RPG',
+    config: 'CONFIGURACION',
+    group: 'GRUPOS',
+    owner: 'PROPIETARIO',
+    info: 'INFORMACION',
+    fun: 'DIVERSION',
+    anime: 'ANIME',
+    sticker: 'STICKERS',
+    tools: 'HERRAMIENTAS',
+    nsfw: 'NSFW',
+    audio: 'AUDIO',
+    prem: 'PREMIUM',
+    shop: 'TIENDA',
+    edit: 'EDICION',
+    otros: 'OTROS'
   }
 
   let menu = `🐱 𓆩 ***COTTI BOTS x Marie*** 𓆪 🐱\n\n`
-  menu += `⤷ ┇ 𝐕𝐄𝐑𝐒𝐈𝐎𝐍 ﹒ 3.0 PREM ：✿ 。\n`
+  menu += `⤷ ┇ 𝐕𝐄𝐑𝐒𝐈𝐎𝐍 ﹒ 3.0 ：✿ 。\n` // <- QUITE EL PREM
   menu += `꒰ ◞⁺⊹ ．estado: *EN LINEA* • ${_uptime}\n\n`
   menu += ` ꒱ ׁ. ᘏ 𝗨𝗦𝗨𝗔𝗥𝗜𝗢 𝗔𝗖𝗧𝗜𝗩𝗢 ׅ 𝆬 ָ֢ ෆ\n`
   menu += `🐱 ࣪ ꕀ @${taguser.split('@')[0]}. ˚. ᵎᵎ\n`
@@ -58,12 +74,13 @@ let handler = async (m, { conn, usedPrefix }) => {
   menu += ` ᶻz　*${new Date().toLocaleDateString('es', {weekday: 'long', timeZone: 'America/Lima'})}* ─ ${new Date().toLocaleDateString('es', {timeZone: 'America/Lima'})} ─ ${new Date().toLocaleTimeString('es', {timeZone: 'America/Lima'})}　⋌\n\n`
   menu += `© ❛ *ping*. ${ping}ms\n`
   menu += `名 ─ *modo:* public﹔\n\n`
-  menu += `> ❍ 𝖴𝗌𝖺. 𝖺𝗇𝗍𝖾𝗌 𝖽𝖾 𝖼𝖺𝖽𝖺 𝖼𝗈𝗆𝖺𝗇𝖽𝗈 𝗉𝖺𝗋𝖺 𝖺𝖼𝗍𝗂𝗏𝖺𝗋𝗅𝗈\n`
+  menu += `> ❍ 𝖴𝗌𝖺 ${usedPrefix} 𝖺𝗇𝗍𝖾𝗌 𝖽𝖾 𝖼𝖺𝖽𝖺 𝖼𝗈𝗆𝖺𝗇𝖽𝗈\n`
 
+  // AQUI CAMBIA: AHORA MUESTRA EL NOMBRE REAL DE LA CATEGORIA
   for (let category in groups) {
     let icon = icons[category] || '📁'
     let catName = categoryNames[category] || category.toUpperCase()
-    menu += `.⃟𖥔 ݁. 𖦹˙— \`\`𝐏𝐫𝐞𝐦\`\` —˙𖦹.${icon}꒷\n`
+    menu += `.⃟𖥔 ݁. 𖦹˙— \`\`${catName}\`\` —˙𖦹.${icon}꒷\n` // <- AQUI SALE EL NOMBRE REAL
     for (let cmd of groups[category]) {
       menu += `${icon} ➛.${cmd}\n`
     }
@@ -74,7 +91,7 @@ let handler = async (m, { conn, usedPrefix }) => {
   menu += `🐱 ***COTTI BOTS x Marie*** 🐱\n`
   menu += `*Owner*: ${ownerTag}\n`
   menu += `*Contacto*: +${numBot}\n`
-  menu += `*Version*: 3.0 PREM\n`
+  menu += `*Version*: 3.0\n` // <- QUITE EL PREM
   menu += `*Power*: Nivel Marie\n`
   menu += `> "Siempre lista para ayudarte con una sonrisa" 💖\n`
   menu += `━━━━━━━━━━━`
@@ -95,5 +112,6 @@ export default handler
 function clockString(ms) {
   let h = isNaN(ms)? '--' : Math.floor(ms / 3600000)
   let m = isNaN(ms)? '--' : Math.floor(ms / 60000) % 60
-  return [h, m].map(v => v.toString().padStart(2, 0)).join('h ') + 'm'
+  let s = isNaN(ms)? '--' : Math.floor(ms / 1000) % 60
+  return [h, m, s].map(v => v.toString().padStart(2, 0)).join('h ') + 'm'
 }
