@@ -2,28 +2,32 @@ import fs from 'fs'
 let db = './database/shop.json'
 
 // Crear base de datos si no existe
-if (!fs.existsSync('./database')) fs.mkdirSync('./database') // <- Crea la carpeta si no existe
+if (!fs.existsSync('./database')) fs.mkdirSync('./database')
 if (!fs.existsSync(db)) fs.writeFileSync(db, JSON.stringify({}))
 
 let handler = async (m, { conn, args, command, usedPrefix }) => {
-    // CARGAR DB CADA VEZ PARA QUE NO SE BUGUEE
     let shop = JSON.parse(fs.readFileSync(db))
     let chat = m.chat
     let user = m.sender
+
+    // FIX: DETECTAR ADMIN CORRECTAMENTE
     let isAdmin = false
+    let isOwner = false
     if (m.isGroup) {
         let meta = await conn.groupMetadata(chat)
-        isAdmin = meta.participants.find(v => v.id == user)?.admin
+        let participant = meta.participants.find(p => p.id === user)
+        isAdmin = participant?.admin === 'admin' || participant?.admin === 'superadmin' // <- AQUI EL FIX
+        isOwner = user === conn.user.jid || user === global.owner[0] + '@s.whatsapp.net' // owner del bot tambien puede
     }
 
     if (!shop[chat]) shop[chat] = {combos:{}, pago:{}, stock:{}}
     let data = shop[chat]
 
-    // SOLO ADMINS PUEDEN CONFIGURAR
+    // SOLO ADMINS Y OWNER PUEDEN CONFIGURAR
     let adminOnly = ['setcombos','delcombos','setpago','delpago','setstock','delstock']
-    if (adminOnly.includes(command) &&!isAdmin) return m.reply('❌ Solo los administradores pueden usar este comando')
+    if (adminOnly.includes(command) &&!isAdmin &&!isOwner) return m.reply('❌ Solo los administradores pueden usar este comando')
 
-    const guardar = () => fs.writeFileSync(db, JSON.stringify(shop, null, 2)) // <- función para guardar
+    const guardar = () => fs.writeFileSync(db, JSON.stringify(shop, null, 2))
 
     switch(command) {
         // ========== COMBOS ==========
@@ -47,7 +51,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
         break
 
         case 'delcombos':
-            if (!args[0]) return m.reply(`🗑️ *EXPLICACIÓN:* Elimina un combo\n\n*USO:* ${usedPrefix}delcombos nombre`)
+            if (!args[0]) return m.reply(`🗑️ *EXPLICACIÓN:* Elimina un combo\n*USO:* ${usedPrefix}delcombos nombre`)
             let delC = args[0].toLowerCase()
             if (!data.combos[delC]) return m.reply('❌ Ese combo no existe')
             delete data.combos[delC]
@@ -57,7 +61,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
 
         // ========== PAGOS ==========
         case 'setpago':
-            if (args.length < 2) return m.reply(`💳 *EXPLICACIÓN:* Agrega un método de pago\n\n*USO:* ${usedPrefix}setpago metodo|numero\n*EJEMPLO:* ${usedPrefix}setpago Yape|927174369`)
+            if (args.length < 2) return m.reply(`💳 *EXPLICACIÓN:* Agrega un método de pago\n*USO:* ${usedPrefix}setpago metodo|numero\n*EJEMPLO:* ${usedPrefix}setpago Yape|927174369`)
             let [n2, p2] = args.join(' ').split('|')
             if (!p2) return m.reply('❌ Formato incorrecto. Usa: metodo|numero')
             data.pago[n2.toLowerCase()] = p2.trim()
@@ -86,7 +90,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
 
         // ========== STOCK ==========
         case 'setstock':
-            if (args.length < 2) return m.reply(`📊 *EXPLICACIÓN:* Agrega stock de un producto\n\n*USO:* ${usedPrefix}setstock producto|cantidad\n*EJEMPLO:* ${usedPrefix}setstock Cuentas Netflix|15`)
+            if (args.length < 2) return m.reply(`📊 *EXPLICACIÓN:* Agrega stock de un producto\n*USO:* ${usedPrefix}setstock producto|cantidad\n*EJEMPLO:* ${usedPrefix}setstock Cuentas Netflix|15`)
             let [n3, p3] = args.join(' ').split('|')
             if (!p3) return m.reply('❌ Formato incorrecto. Usa: producto|cantidad')
             data.stock[n3.toLowerCase()] = p3.trim()
@@ -115,7 +119,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
 }
 
 handler.help = ['setcombos','combos','delcombos','setpago','pago','delpago','setstock','stock','delstock']
-handler.tags = ['shop'] // <- ESTO ES CLAVE PARA QUE SALGA EN EL MENU
+handler.tags = ['shop']
 handler.command = /^(setcombos|combos|delcombos|setpago|pago|delpago|setstock|stock|delstock)$/i
 handler.group = true
 
