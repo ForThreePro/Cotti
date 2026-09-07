@@ -9,15 +9,16 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
     let chat = m.chat
     let user = m.sender
 
-    // FIX DEFINITIVO: DETECTAR ADMIN
+    // FIX DEFINITIVO: LIMPIAR ID Y BUSCAR ADMIN
     let isAdmin = false
     let isOwner = [conn.user.jid, global.owner[0] + '@s.whatsapp.net'].includes(user)
 
     if (m.isGroup) {
         let meta = await conn.groupMetadata(chat)
-        let participant = meta.participants.find(p => p.id === user)
-        // Metodo 1: admin === 'admin' || 'superadmin'
-        // Metodo 2: admin === true
+        // Quitar :device del id por si acaso
+        let cleanUser = user.split(':')[0]
+        let participant = meta.participants.find(p => p.id.split(':')[0] === cleanUser)
+
         isAdmin = participant?.admin === 'admin' || participant?.admin === 'superadmin' || participant?.admin === true
     }
 
@@ -27,7 +28,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
     // SOLO ADMINS Y OWNER
     let adminOnly = ['setcombos','delcombos','setpago','delpago','setstock','delstock']
     if (adminOnly.includes(command) &&!isAdmin &&!isOwner) {
-        return m.reply(`❌ Solo los administradores pueden usar este comando\nTu ID: ${user}\nAdmin: ${isAdmin}\nOwner: ${isOwner}`) // <- borra esto despues de probar
+        return m.reply(`❌ Solo los administradores pueden usar este comando`)
     }
 
     const guardar = () => fs.writeFileSync(db, JSON.stringify(shop, null, 2))
