@@ -4,7 +4,7 @@ let db = './database/autocmds.json'
 if (!fs.existsSync('./database')) fs.mkdirSync('./database')
 if (!fs.existsSync(db)) fs.writeFileSync(db, '{}')
 
-let handler = async (m, { conn, args, command, usedPrefix }) => {
+let handler = async (m, { conn, args, command, usedPrefix }) => { // <- TIENE QUE DECIR async AQUI
     try {
         let cmds = {}
         try { cmds = JSON.parse(fs.readFileSync(db)) } catch { cmds = {} }
@@ -12,8 +12,12 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
         let chat = m.chat
         if (!cmds[chat]) cmds[chat] = {}
         let data = cmds[chat]
-        const guardar = () => { try { fs.writeFileSync(db, JSON.stringify(cmds)) } catch { m.reply('❌ Error al guardar') }
+        
+        const guardar = () => { 
+            try { fs.writeFileSync(db, JSON.stringify(cmds)) } catch { m.reply('❌ Error al guardar') } 
+        }
 
+        // ========== SET ==========
         if (command === 'set') {
             let nombre = args[0]?.toLowerCase()
             if (!nombre) return m.reply(`📌 *USO:* ${usedPrefix}set nombre texto/media`)
@@ -26,8 +30,8 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
 
             if (q.mimetype) {
                 try {
-                    media = await q.download()
-                    if (media.length > 20 * 1024 * 1024) return m.reply('❌ El archivo es muy pesado. Max 20MB') // <- 20MB
+                    media = await q.download() // <- AQUI VA EL AWAIT
+                    if (media.length > 20 * 1024 * 1024) return m.reply('❌ El archivo es muy pesado. Max 20MB')
                     if (q.mimetype.includes('image')) type = 'image'
                     else if (q.mimetype.includes('video')) type = 'video'
                     else if (q.mimetype.includes('audio')) type = 'audio'
@@ -41,6 +45,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
             return m.reply(`✅ *COMANDO.${nombre} CREADO*\n\nAhora usa:.${nombre}`)
         }
 
+        // ========== DEL ==========
         if (command === 'del') {
             let nombre = args[0]?.toLowerCase()
             if (!nombre) return m.reply(`📌 *USO:* ${usedPrefix}del nombre`)
@@ -50,6 +55,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
             return m.reply(`✅ *Comando.${nombre} eliminado*`)
         }
 
+        // ========== MENU ==========
         if (command === 'menucmd') {
             let lista = Object.keys(data)
             if (lista.length == 0) return m.reply('❌ No hay comandos aún')
@@ -59,6 +65,7 @@ let handler = async (m, { conn, args, command, usedPrefix }) => {
             return m.reply(txt)
         }
 
+        // ========== USAR COMANDO ==========
         if (data[command]) {
             let cmd = data[command]
             let buffer = cmd.media? Buffer.from(cmd.media, 'base64') : null
