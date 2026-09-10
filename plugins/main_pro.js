@@ -31,7 +31,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 > *"COTTI BOTS x Marie está aquí para ayudar"* 💖`
 
         // Solo 1 foto
-        let img = { url: 'https://files.evogb.win/QFXQtu.jpg' }
+        let img = { url: 'https://files.evogb.win/UHUtT3.jpg' }
 
         await m.react('✅')
         return conn.sendMessage(m.chat, {
@@ -65,7 +65,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 *Owner*: @56931300864
 > *"Respondo más rápido que un parpadeo"* 💖`
 
-        let img = { url: 'https://files.evogb.win/QFXQtu.jpg' }
+        let img = { url: 'https://files.evogb.win/UHUtT3.jpg' }
 
         await m.react('✅')
         return conn.sendMessage(m.chat, {
