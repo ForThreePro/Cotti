@@ -53,7 +53,7 @@ let handler = async (m, { conn, args }) => {
     try {
       pp = await conn.profilePictureUrl(who, 'image')
     } catch {
-      pp = 'https://files.evogb.win/QFXQtu.jpg' // imagen por defecto COTTI
+      pp = 'https://files.evogb.win/UHUtT3.jpg' // imagen por defecto COTTI
     }
 
     await conn.sendMessage(m.chat, {
