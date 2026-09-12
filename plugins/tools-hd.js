@@ -37,25 +37,15 @@ let handler = async (m, { conn }) => {
       let buffer = await q.download()
       let uploadedUrl = await uploadToUguu(buffer, mime)
 
-      // PASO 1: PROCESAR 2K SOLO PARA AVISAR
-      await upscaleImage(uploadedUrl, 2)
-      await m.reply(`✅ Ya lo convertí en *HD 2K*\n\nEstoy procesando a *4K*... espera un momento`)
+      await m.reply(`✅ Procesando a *HD 4K*... espera un momento`)
 
-      // PASO 2: PROCESAR 4K
+      // SOLO PROCESAR 4K DIRECTO
       let hd4k = await upscaleImage(uploadedUrl, 4)
 
-      // PASO 3: MANDAR 4K EN IMAGEN
+      // SOLO MANDAR IMAGEN - QUITÉ EL DOCUMENTO
       await conn.sendMessage(m.chat, {
         image: hd4k,
-        caption: `✨ *HD 4K LISTO*\n\nCalidad: Ultra HD x4\nEnviando documento sin compresión...`
-      }, { quoted: m })
-
-      // PASO 4: MANDAR 4K EN DOCUMENTO AUTOMATICO
-      await conn.sendMessage(m.chat, {
-        document: hd4k,
-        fileName: `hd-4k.png`,
-        mimetype: 'image/png',
-        caption: `Documento HD 4K - Sin compresión`
+        caption: `✨ *HD 4K LISTO*\n\nCalidad: Ultra HD x4\nKey: proyectsV2`
       }, { quoted: m })
 
       await m.react('✅')
@@ -66,7 +56,7 @@ let handler = async (m, { conn }) => {
     }
 }
 
-handler.help = ['hd - Convierte imagen a 4K y envía imagen + documento automático']
+handler.help = ['hd - Convierte imagen a 4K']
 handler.tags = ['tools']
 handler.command = /^(hd)$/i
 export default handler
