@@ -60,18 +60,10 @@ let handler = async (m, { conn, usedPrefix, command }) => {
       const hdUrl = await uploadToUguu(hdBuffer, 'image/png')
       const finalBuffer = await removeBgFromUrl(hdUrl)
 
-      // Enviar imagen PNG sin fondo
+      // SOLO ENVIAR IMAGEN - Borré el documento
       await conn.sendMessage(m.chat, {
         image: finalBuffer,
-        caption: `*Resultado:*\n- Calidad: HD 2x\n- Fondo: Eliminado\n- Key: proyectsV2`
-      }, { quoted: m })
-
-      // Enviar también como documento
-      await conn.sendMessage(m.chat, {
-        document: finalBuffer,
-        fileName: 'nobg.png',
-        mimetype: 'image/png',
-        caption: `Documento PNG Sin Fondo`
+        caption: `✅ *Resultado:*\n- Calidad: HD 2x\n- Fondo: Eliminado\n- Key: proyectsV2`
       }, { quoted: m })
 
       await m.react('✅')
