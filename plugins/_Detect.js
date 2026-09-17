@@ -1,131 +1,113 @@
-import moment from 'moment-timezone'
-moment.locale('es')
+let detectEventsRegistered = false
+let catalogoImg = { url: 'https://files.evogb.win/UHUtT3.jpg' }
 
 export async function before(m, { conn }) {
-  if (!m.isGroup) return
-  if (!m.messageStubType) return
-  let chat = global.db.data.chats[m.chat]
-  if (!chat ||!chat.detect) return
+  if (!detectEventsRegistered) {
+    detectEventsRegistered = true
 
-  const fecha = moment.tz('America/Lima').format('DD/MM/YYYY hh:mm:ss a')
+    // DETECTA ADMIN - FIX REAL
+    conn.ev.on('group-participants.update', async (update) => {
+      try {
+        let chat = global.db.data.chats[update.id]
+        if (!chat?.detect) return
 
-  try {
-    // CAMBIO DE NOMBRE - 21
-    if (m.messageStubType == 21) {
-      let txt = `🍕 𓆩 𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𓆪 🍕
+        let author = update.author || 'Alguien'
+        for (let user of update.participants) {
+          if (update.action === 'promote') {
+            let txt = `🐱 𓆩 𝗗𝗘𝗧𝗘𝗖𝗧 𓆪
 
-⤷ ┇ 𝐃𝐄𝐓𝐄𝐂𝐓 ﹒ NOMBRE ：✿ 。
-꒰ ◞⁺⊹ ．${fecha}
+.⃟𖥔 ݁. 𖦹˙— \`\`ADMIN DADO\`\` —˙𖦹.💖꒷
 
-.⃟𖥔 ݁. 𖦹˙— \`\`CAMBIADO\`\` 📝 —˙𖦹.꒷
-
-── *👤 ACCION* ╏ 🍕
-👑 ➛ Por: @${m.sender.split('@')[0]}
-📝 ➛ Nuevo: *${m.messageStubParameters[0]}*
-
-━━━━━━━━━━━
-🍕 *GARFIELD BOT* 🍕
-━━━━━━━━━━━`
-      await conn.sendMessage(m.chat, { text: txt, mentions: [m.sender] })
-    }
-
-    // CAMBIO DE FOTO - 22
-    if (m.messageStubType == 22) {
-      let txt = `🍕 𓆩 𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𓆪 🍕
-
-⤷ ┇ 𝐃𝐄𝐓𝐄𝐂𝐓 ﹒ FOTO ：✿ 。
-꒰ ◞⁺⊹ ．${fecha}
-
-.⃟𖥔 ݁. 𖦹˙— \`\`CAMBIADA\`\` 🖼️ —˙𖦹.꒷
-
-── *👤 ACCION* ╏ 🍕
-👑 ➛ Por: @${m.sender.split('@')[0]}
-🖼️ ➛ La foto del grupo fue cambiada
+🌸 *Marie dice: ¡Nuevo admin!* 👑
+👑 *Por:* @${author.split('@')[0]}
+🎖️ *Para:* @${user.split('@')[0]}
 
 ━━━━━━━━━━━
-🍕 *GARFIELD BOT* 🍕
-━━━━━━━━━━━`
-      await conn.sendMessage(m.chat, { text: txt, mentions: [m.sender] })
-    }
+*Powered by*: ***COTTI BOTS x Marie*** 🌸`
+            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author, user] })
+          }
+          if (update.action === 'demote') {
+            let txt = `🐱 𓆩 𝗗𝗘𝗧𝗘𝗖𝗧 𓆪
 
-    // RESET LINK - 23
-    if (m.messageStubType == 23) {
-      let code = await conn.groupInviteCode(m.chat).catch(() => 'Error')
-      let txt = `🍕 𓆩 𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𓆪 🍕
+.⃟𖥔 ݁. 𖦹˙— \`\`ADMIN QUITADO\`\` —˙𖦹.💖꒷
 
-⤷ ┇ 𝐃𝐄𝐓𝐄𝐂𝐓 ﹒ LINK ：✿ 。
-꒰ ◞⁺⊹ ．${fecha}
-
-.⃟𖥔 ݁. 𖦹˙— \`\`RESETEADO\`\` 🔗 —˙𖦹.꒷
-
-── *👤 ACCION* ╏ 🍕
-👑 ➛ Por: @${m.sender.split('@')[0]}
-🔗 ➛ Nuevo: https://chat.whatsapp.com/${code}
+🌸 *Marie dice: ¡Le quitaron admin!* 😿
+👑 *Por:* @${author.split('@')[0]}
+💔 *A:* @${user.split('@')[0]}
 
 ━━━━━━━━━━━
-🍕 *GARFIELD BOT* 🍕
-━━━━━━━━━━━`
-      await conn.sendMessage(m.chat, { text: txt, mentions: [m.sender] })
-    }
+*Powered by*: ***COTTI BOTS x Marie*** 🌸`
+            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author, user] })
+          }
+        }
+      } catch (e) { console.log(e) }
+    })
 
-    // DESCRIPCION - 24
-    if (m.messageStubType == 24) {
-      let txt = `🍕 𓆩 𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𓆪 🍕
+    // DETECTA NOMBRE, FOTO, DESC, LINK
+    conn.ev.on('groups.update', async (updates) => {
+      try {
+        for (let update of updates) {
+          let chat = global.db.data.chats[update.id]
+          if (!chat?.detect) continue
+          let author = update.author || 'Alguien'
 
-⤷ ┇ 𝐃𝐄𝐓𝐄𝐂𝐓 ﹒ DESCRIPCION ：✿ 。
-꒰ ◞⁺⊹ ．${fecha}
+          if (update.subject) {
+            let txt = `🐱 𓆩 𝗗𝗘𝗧𝗘𝗖𝗧 𓆪
 
-.⃟𖥔 ݁. 𖦹˙— \`\`CAMBIADA\`\` 📄 —˙𖦹.꒷
+.⃟𖥔 ݁. 𖦹˙— \`\`NOMBRE\`\` —˙𖦹.💖꒷
 
-── *👤 ACCION* ╏ 🍕
-👑 ➛ Por: @${m.sender.split('@')[0]}
-📝 ➛ Nueva: ${m.messageStubParameters[0] || 'Vacía'}
-
-━━━━━━━━━━━
-🍕 *GARFIELD BOT* 🍕
-━━━━━━━━━━━`
-      await conn.sendMessage(m.chat, { text: txt, mentions: [m.sender] })
-    }
-
-    // ADMIN DADO - 27 y 32
-    if ([27, 32].includes(m.messageStubType)) {
-      let txt = `🍕 𓆩 𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𓆪 🍕
-
-⤷ ┇ 𝐃𝐄𝐓𝐄𝐂𝐓 ﹒ ADMIN ：✿ 。
-꒰ ◞⁺⊹ ．${fecha}
-
-.⃟𖥔 ݁. 𖦹˙— \`\`DADO\`\` 👑 —˙𖦹.꒷
-
-── *👤 ACCION* ╏ 🍕
-👑 ➛ Por: @${m.sender.split('@')[0]}
-🎖️ ➛ Nuevo admin: @${m.messageStubParameters[0].split('@')[0]}
+🌸 *Marie dice: ¡Cambiaron el nombre!*
+👑 *Por:* @${author.split('@')[0]}
+📝 *Nuevo:* *${update.subject}*
 
 ━━━━━━━━━━━
-🍕 *GARFIELD BOT* 🍕
-━━━━━━━━━━━`
-      await conn.sendMessage(m.chat, { text: txt, mentions: [m.sender, m.messageStubParameters[0]] })
-    }
+*Powered by*: ***COTTI BOTS x Marie*** 🌸`
+            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author].filter(a => a.includes('@')) })
+          }
 
-    // ADMIN QUITADO - 28
-    if (m.messageStubType == 28) {
-      let txt = `🍕 𓆩 𝗚𝗔𝗥𝗙𝗜𝗘𝗟𝗗 𝗕𝗢𝗧 𓆪 🍕
+          if (update.desc) {
+            let txt = `🐱 𓆩 𝗗𝗘𝗧𝗘𝗖𝗧 𓆪
 
-⤷ ┇ 𝐃𝐄𝐓𝐄𝐂𝐓 ﹒ ADMIN ：✿ 。
-꒰ ◞⁺⊹ ．${fecha}
+.⃟𖥔 ݁. 𖦹˙— \`\`DESCRIPCION\`\` —˙𖦹.💖꒷
 
-.⃟𖥔 ݁. 𖦹˙— \`\`QUITADO\`\` 💔 —˙𖦹.꒷
-
-── *👤 ACCION* ╏ 🍕
-👑 ➛ Por: @${m.sender.split('@')[0]}
-💔 ➛ Ex-admin: @${m.messageStubParameters[0].split('@')[0]}
+🌸 *Marie dice: ¡Descripción cambiada!*
+👑 *Por:* @${author.split('@')[0]}
+📝 *Nueva:* ${update.desc.slice(0, 350)}
 
 ━━━━━━━━━━━
-🍕 *GARFIELD BOT* 🍕
-━━━━━━━━━━━`
-      await conn.sendMessage(m.chat, { text: txt, mentions: [m.sender, m.messageStubParameters[0]] })
-    }
+*Powered by*: ***COTTI BOTS x Marie*** 🌸`
+            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author].filter(a => a.includes('@')) })
+          }
 
-  } catch (e) {
-    console.log(e)
+          if (update.icon) {
+            let txt = `🐱 𓆩 𝗗𝗘𝗧𝗘𝗖𝗧 𓆪
+
+.⃟𖥔 ݁. 𖦹˙— \`\`FOTO\`\` —˙𖦹.💖꒷
+
+🌸 *Marie dice: ¡Nueva foto del grupo!* 🖼️
+👑 *Por:* @${author.split('@')[0]}
+
+━━━━━━━━━━━
+*Powered by*: ***COTTI BOTS x Marie*** 🌸`
+            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author].filter(a => a.includes('@')) })
+          }
+
+          if (update.inviteCode) {
+            let txt = `🐱 𓆩 𝗗𝗘𝗧𝗘𝗖𝗧 𓆪
+
+.⃟𖥔 ݁. 𖦹˙— \`\`LINK\`\` —˙𖦹.💖꒷
+
+🌸 *Marie dice: ¡Link reseteado!*
+👑 *Por:* @${author.split('@')[0]}
+🔗 *Link:* https://chat.whatsapp.com/${update.inviteCode}
+
+━━━━━━━━━━━
+*Powered by*: ***COTTI BOTS x Marie*** 🌸`
+            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author].filter(a => a.includes('@')) })
+          }
+        }
+      } catch (e) { console.log(e) }
+    })
   }
+  return true
 }
