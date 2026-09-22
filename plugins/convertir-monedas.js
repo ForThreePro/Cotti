@@ -1,9 +1,6 @@
-import axios from 'axios'
-
 let handler = async (m, { conn, args, text }) => {
   let user = m.sender
   let nombre = await conn.getName(user)
-  let imgDefault = 'https://files.evogb.win/ySkXCm.jpg'
 
   const monedas = {
     peru: 'PEN', argentina: 'ARS', mexico: 'MXN',
@@ -43,19 +40,7 @@ let handler = async (m, { conn, args, text }) => {
     return tasaDeaPEN * tasaPENaA
   }
 
-  async function getFoto() {
-    try {
-      let pp = await conn.profilePictureUrl(user, 'image')
-      return typeof pp === 'string'? pp : imgDefault
-    } catch {
-      return imgDefault
-    }
-  }
-
   if (!args[0]) {
-    let ppUrl = await getFoto()
-    let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
-
     let menu = `🐱 𓆩 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗚𝗢𝗚𝗟𝗘 𓆪 🐱\n\n`
     menu += `╭─💖─ \`\`COTTI BOTS x MARIE\`\` ─💖─╮\n`
     menu += `│\n`
@@ -74,7 +59,7 @@ let handler = async (m, { conn, args, text }) => {
     menu += `╰─✨ Tasas fijas actualizables ✨─╯\n`
     menu += `\n━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
-    return await conn.sendMessage(m.chat, { image: buffer, caption: menu }, { quoted: m })
+    return await conn.sendMessage(m.chat, { text: menu }, { quoted: m })
   }
 
   let cantidad, de, a
@@ -97,8 +82,6 @@ let handler = async (m, { conn, args, text }) => {
 
   try {
     await m.react('⏳')
-    let ppUrl = await getFoto()
-    let buffer = (await axios.get(ppUrl, {responseType: 'arraybuffer'})).data
 
     let texto = `🐱 𓆩 𝗥𝗘𝗦𝗨𝗟𝗧𝗔𝗗𝗢 𝗗𝗘 ${nombre.toUpperCase()} 𓆪 🐱\n\n`
     texto += `╭─💜─ \`\`COTTI BOTS x MARIE\`\` ─💜─╮\n`
@@ -132,7 +115,7 @@ let handler = async (m, { conn, args, text }) => {
     texto += `│\n╰─🕐 Actualizado manual ─╯\n`
     texto += `\n━━━━━━━━━━━\n*Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
-    await conn.sendMessage(m.chat, { image: buffer, caption: texto }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: texto }, { quoted: m })
     await m.react('✅')
   } catch (e) {
     await m.react('❌')
