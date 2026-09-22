@@ -1,5 +1,4 @@
 let detectEventsRegistered = false
-let catalogoImg = { url: 'https://files.evogb.win/UHUtT3.jpg' }
 
 export async function before(m, { conn }) {
   if (!detectEventsRegistered) {
@@ -24,7 +23,7 @@ export async function before(m, { conn }) {
 
 ━━━━━━━━━━━
 *Powered by*: ***COTTI BOTS x Marie*** 🌸`
-            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author, user] })
+            await conn.sendMessage(update.id, { text: txt, mentions: [author, user] })
           }
           if (update.action === 'demote') {
             let txt = `🐱 𓆩 𝗗𝗘𝗧𝗘𝗖𝗧 𓆪
@@ -37,7 +36,7 @@ export async function before(m, { conn }) {
 
 ━━━━━━━━━━━
 *Powered by*: ***COTTI BOTS x Marie*** 🌸`
-            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author, user] })
+            await conn.sendMessage(update.id, { text: txt, mentions: [author, user] })
           }
         }
       } catch (e) { console.log(e) }
@@ -62,7 +61,7 @@ export async function before(m, { conn }) {
 
 ━━━━━━━━━━━
 *Powered by*: ***COTTI BOTS x Marie*** 🌸`
-            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author].filter(a => a.includes('@')) })
+            await conn.sendMessage(update.id, { text: txt, mentions: [author].filter(a => a.includes('@')) })
           }
 
           if (update.desc) {
@@ -76,7 +75,7 @@ export async function before(m, { conn }) {
 
 ━━━━━━━━━━━
 *Powered by*: ***COTTI BOTS x Marie*** 🌸`
-            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author].filter(a => a.includes('@')) })
+            await conn.sendMessage(update.id, { text: txt, mentions: [author].filter(a => a.includes('@')) })
           }
 
           if (update.icon) {
@@ -89,7 +88,7 @@ export async function before(m, { conn }) {
 
 ━━━━━━━━━━━
 *Powered by*: ***COTTI BOTS x Marie*** 🌸`
-            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author].filter(a => a.includes('@')) })
+            await conn.sendMessage(update.id, { text: txt, mentions: [author].filter(a => a.includes('@')) })
           }
 
           if (update.inviteCode) {
@@ -103,7 +102,7 @@ export async function before(m, { conn }) {
 
 ━━━━━━━━━━━
 *Powered by*: ***COTTI BOTS x Marie*** 🌸`
-            await conn.sendMessage(update.id, { image: catalogoImg, caption: txt, mentions: [author].filter(a => a.includes('@')) })
+            await conn.sendMessage(update.id, { text: txt, mentions: [author].filter(a => a.includes('@')) })
           }
         }
       } catch (e) { console.log(e) }
