@@ -63,7 +63,6 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
 
   if (fail) return
 
-  let catalogoImg = { url: 'https://files.evogb.win/UHUtT3.jpg' }
   let estadoTexto = isEnable? 'Activado 💖' : 'Desactivado 😿'
   let estadoEmoji = isEnable? '🟢' : '🔴'
 
@@ -79,8 +78,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
 *Powered by*: ***COTTI BOTS x Marie*** 🌸`
 
   await conn.sendMessage(m.chat, {
-    image: catalogoImg,
-    caption: statusTxt,
+    text: statusTxt,
     mentions: [m.sender]
   }, { quoted: m })
 }
