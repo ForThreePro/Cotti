@@ -11,7 +11,7 @@ let handler = async (m, { conn, command }) => {
     }
 
     if (command === 'setabrir' || command === 'setcerrar') {
-        if (!m.quoted) return m.reply('😼🍕 Responde a un sticker con .setabrir o .setcerrar')
+        if (!m.quoted) return m.reply('💅🎀 Responde a un sticker con .setabrir o .setcerrar - Cotti quiere su sticker linda')
         try {
             let q = m.quoted
             let fileSha256 = q.msg?.fileSha256 || q.message?.stickerMessage?.fileSha256
@@ -33,22 +33,22 @@ let handler = async (m, { conn, command }) => {
             let icon = command === 'setabrir' ? '🟢' : '🔴'
             await react(icon)
 
-            let msg = `😼 𓆩 𝗟𝗨𝗫 𝗫 𝗬𝗔𝗟𝗟𝗜𝗖𝗢 𓆪 🍕
+            let msg = `💅 𓆩 𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧 𓆪 🎀
 
 ⤷ ┇ 𝐒𝐓𝐈𝐂𝐊𝐄𝐑 ﹒ ${estado} ：✿ 。
 ꒰ ◞⁺⊹ ．${fecha}
 
 .⃟𖥔 ݁. 𖦹˙— \`\`GUARDADO\`\` ${icon} —˙𖦹.꒷
-😼 Odio los lunes, pero este sticker quedó purrfecto 🍝
+💅 Ay linda, este sticker quedó divino 💖
 
-── *📊 INFO GARFIELD* ╏ 🍕
+── *📊 INFO COTTI* ╏ 🎀
 ${icon} ➛ Tipo: *${estado}*
 👑 ➛ Por: @${m.sender.split('@')[0]}
 🔑 ➛ Hash: ${hash.slice(0,12)}...
-😸 ➛ Lasaña: *Servida*
+💄 ➛ Brillo: *Activado*
 
 ━━━━━━━━━━━
-🍕 *LUX X YALLICO - GARFIELD EDITION* 😼
+💖 *COTTI BOT - FEM EDITION* 💅
 ━━━━━━━━━━━`
             return conn.sendMessage(m.chat, { text: msg, mentions: [m.sender] }, { quoted: m })
 
@@ -56,6 +56,58 @@ ${icon} ➛ Tipo: *${estado}*
             console.log(e)
             return m.reply(`❌ Error: ${e.message}`)
         }
+    }
+
+    if (['resetsticker','delsticker','clearsticker','delabrir','delcerrar'].includes(command)) {
+        let borrado = []
+        if (['resetsticker','delsticker','clearsticker','delabrir'].includes(command) && chat.stickerAbrir) {
+            delete chat.stickerAbrir
+            borrado.push('🟢 ABRIR')
+        }
+        if (['resetsticker','delsticker','clearsticker','delcerrar'].includes(command) && chat.stickerCerrar) {
+            delete chat.stickerCerrar
+            borrado.push('🔴 CERRAR')
+        }
+
+        if (!borrado.length) {
+            await react('❌')
+            return m.reply(`💅 𓆩 𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧 𓆪 🎀
+
+⤷ ┇ 𝐒𝐓𝐈𝐂𝐊𝐄𝐑 ﹒ RESET ：✿ 。
+꒰ ◞⁺⊹ ．${fecha}
+
+.⃟𖥔 ݁. 𖦹˙— \`\`VACIO\`\` ⚠️ —˙𖦹.꒷
+
+── *📝 AVISO* ╏ 💅
+❌ ➛ No hay stickers configurados linda
+💡 ➛ Usa .setabrir / .setcerrar
+
+━━━━━━━━━━━
+💖 *COTTI BOT - FEM EDITION* 💅
+━━━━━━━━━━━`)
+        }
+
+        await react('🗑️')
+        let msg = `💅 𓆩 𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧 𓆪 🎀
+
+⤷ ┇ 𝐒𝐓𝐈𝐂𝐊𝐄𝐑 ﹒ ELIMINADO ：✿ 。
+꒰ ◞⁺⊹ ．${fecha}
+
+.⃟𖥔 ݁. 𖦹˙— \`\`RESETEADO\`\` 🗑️ —˙𖦹.꒷
+💅 Ya lo tiré a la basura linda, pon uno nuevo que sea más bonito
+
+── *📊 BORRADOS* ╏ 🎀
+${borrado.map(b => `🗑️ ➛ ${b}`).join('\n')}
+👑 ➛ Por: @${m.sender.split('@')[0]}
+
+── *📝 NOTA* ╏ 💅
+🔒 ➛ Ya no se abrirá ni cerrará con sticker
+💡 ➛ Configura de nuevo con .setabrir / .setcerrar
+
+━━━━━━━━━━━
+💖 *COTTI BOT - FEM EDITION* 💅
+━━━━━━━━━━━`
+        return conn.sendMessage(m.chat, { text: msg, mentions: [m.sender] }, { quoted: m })
     }
 }
 
@@ -76,38 +128,38 @@ handler.before = async function(m, { conn }) {
         if (!fileSha256) return
         let hash = Buffer.from(fileSha256).toString('base64')
 
-        let isClose, estado, icon, reactEmoji, nota, garfieldMsg
+        let isClose, estado, icon, reactEmoji, nota, cottiMsg
 
         if (chat.stickerAbrir && hash === chat.stickerAbrir) {
-            isClose = 'not_announcement'; estado = 'ABIERTO'; icon = '🔓'; reactEmoji = '😼'; 
-            nota = '💬 ➛ Todos pueden hablar, incluso Odie'
-            garfieldMsg = '😼 Garfield despertó... ¡Hora de comer lasaña y chismear! 🍝'
+            isClose = 'not_announcement'; estado = 'ABIERTO'; icon = '🔓'; reactEmoji = '💅'; 
+            nota = '💬 ➛ Todas pueden hablar linda, a chismear'
+            cottiMsg = '💅 Cotti despertó... ¡Hora de brillar y hablar con las niñas! ✨'
         } else if (chat.stickerCerrar && hash === chat.stickerCerrar) {
-            isClose = 'announcement'; estado = 'CERRADO'; icon = '🔒'; reactEmoji = '😴'; 
-            nota = '🔒 ➛ Solo admins, Garfield está durmiendo siesta'
-            garfieldMsg = '😴 Garfield se fue a dormir... ¡Shhh, no despierten al gato! 🍕'
+            isClose = 'announcement'; estado = 'CERRADO'; icon = '🔒'; reactEmoji = '💤'; 
+            nota = '🔒 ➛ Solo admins linda, Cotti se fue a dormir'
+            cottiMsg = '💤 Cotti se fue a dormir... ¡Shhh, la reina necesita su siesta! 👑'
         } else return
 
         await conn.groupSettingUpdate(m.chat, isClose)
         await react(reactEmoji)
 
-        let msg = `😼 𓆩 𝗟𝗨𝗫 𝗫 𝗬𝗔𝗟𝗟𝗜𝗖𝗢 𓆪 🍕
+        let msg = `💅 𓆩 𝗖𝗢𝗧𝗧𝗜 𝗕𝗢𝗧 𓆪 🎀
 
 ⤷ ┇ 𝐆𝐑𝐔𝐏𝐎 ﹒ ${estado} ：✿ 。
 ꒰ ◞⁺⊹ ．${fecha}
 
 .⃟𖥔 ݁. 𖦹˙— \`\`ACTUALIZADO\`\` ${icon} —˙𖦹.꒷
-${garfieldMsg}
+${cottiMsg}
 
-── *📊 INFO GARFIELD* ╏ 🍕
+── *📊 INFO COTTI* ╏ 🎀
 ${icon} ➛ Estado: *${estado}*
 👑 ➛ Por: @${m.sender.split('@')[0]}
 
-── *📝 NOTA* ╏ 😼
+── *📝 NOTA* ╏ 💅
 ${nota}
 
 ━━━━━━━━━━━
-🍕 *LUX X YALLICO - GARFIELD EDITION* 😼
+💖 *COTTI BOT - FEM EDITION* 💅
 ━━━━━━━━━━━`
         await conn.sendMessage(m.chat, { text: msg, mentions: [m.sender] }, { quoted: m })
 
@@ -116,9 +168,9 @@ ${nota}
     }
 }
 
-handler.help = ['setabrir', 'setcerrar']
+handler.help = ['setabrir', 'setcerrar', 'resetsticker', 'delabrir', 'delcerrar']
 handler.tags = ['grupo']
-handler.command = ['setabrir', 'setcerrar']
+handler.command = ['setabrir', 'setcerrar', 'resetsticker', 'delsticker', 'clearsticker', 'delabrir', 'delcerrar']
 handler.group = true
 handler.admin = true
 handler.botAdmin = true
