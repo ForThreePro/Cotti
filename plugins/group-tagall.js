@@ -80,16 +80,8 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
 *Powered by*: ***COTTI BOTS x Marie*** 🌸
 *Owner*: @whois.yallico`
 
-    // IMAGENES ROTATORIAS
-    const images = [
-      'https://files.evogb.win/UHUtT3.jpg',
-      'https://files.evogb.win/UHUtT3.jpg'
-    ]
-    const imageUrl = { url: images[Math.floor(Math.random() * images.length)] }
-
     await conn.sendMessage(m.chat, {
-      image: imageUrl,
-      caption: messageText,
+      text: messageText,
       mentions: participants.map(a => a.jid || a.id)
     }, { quoted: m })
 
