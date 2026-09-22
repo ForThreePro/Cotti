@@ -1,4 +1,3 @@
-
 import fs from 'fs'
 import os from 'os'
 import * as googleTTS from 'google-tts-api'
@@ -30,13 +29,9 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 *Owner*: @56931300864
 > *"COTTI BOTS x Marie está aquí para ayudar"* 💖`
 
-        // Solo 1 foto
-        let img = { url: 'https://files.evogb.win/UHUtT3.jpg' }
-
         await m.react('✅')
         return conn.sendMessage(m.chat, {
-            image: img,
-            caption: texto,
+            text: texto,
             mentions: [owner]
         })
     }
@@ -65,12 +60,9 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 *Owner*: @56931300864
 > *"Respondo más rápido que un parpadeo"* 💖`
 
-        let img = { url: 'https://files.evogb.win/UHUtT3.jpg' }
-
         await m.react('✅')
         return conn.sendMessage(m.chat, {
-            image: img,
-            caption: texto
+            text: texto
         }, { quoted: m })
     }
 
@@ -238,16 +230,16 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 
         await new Promise((resolve, reject) => {
             ffmpeg(url)
-          .audioCodec('libopus')
-          .toFormat('opus')
-          .outputOptions([
+         .audioCodec('libopus')
+         .toFormat('opus')
+         .outputOptions([
                     '-avoid_negative_ts make_zero',
                     '-ac 1',
                     '-b:a 64k'
                 ])
-          .on('end', () => resolve(true))
-          .on('error', (err) => reject(err))
-          .save(tmpFilePath)
+         .on('end', () => resolve(true))
+         .on('error', (err) => reject(err))
+         .save(tmpFilePath)
         })
 
         let audioBuffer = fs.readFileSync(tmpFilePath)
