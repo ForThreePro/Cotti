@@ -3,7 +3,7 @@ moment.locale('es')
 
 let handler = async (m, { conn }) => {
     const fecha = moment.tz('America/Lima').format('DD/MM/YYYY hh:mm:ss a')
-    const ownerNumber = '51927174369@s.whatsapp.net'
+    const ownerNumber = '56931300864@s.whatsapp.net'
 
     const react = async (text) => {
         try { await conn.sendMessage(m.chat, { react: { text: text, key: m.key } }) } catch {}
@@ -22,7 +22,7 @@ let handler = async (m, { conn }) => {
 
 ── *📊 INFO* ╏ 🎀
 🔒 ➛ Comando: *.kickall*
-👑 ➛ Solo: +51 927 174 369
+👑 ➛ Solo: +56 9 3130 0864
 
 ━━━━━━━━━━━`, mentions: [m.sender] }, { quoted: m })
     }
